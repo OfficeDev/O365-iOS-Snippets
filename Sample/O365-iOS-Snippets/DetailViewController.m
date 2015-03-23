@@ -14,46 +14,43 @@
 @implementation DetailViewController
 
 - (void)viewDidLoad {
-    
+
     [super viewDidLoad];
-    
-    
+
     [_resultsWebView loadHTMLString:[self.detailItem description] baseURL:nil];
-    
-    
+
     //Check to see if the user is logged in to the app and enable/disable the Disconnect button
     id<ADTokenCacheStoring> cache = [ADAuthenticationSettings sharedInstance].defaultTokenCacheStore;
-    
+
     if (cache == nil)
-        
-            {
-                
-                self.disconnectButton.enabled = NO;
-        
-            }
-            else
-            {
-                self.disconnectButton.enabled = YES;
-                
-            }
-    
+    {
+        self.disconnectButton.enabled = NO;
+    }
+    else
+    {
+        self.disconnectButton.enabled = YES;
+    }
 }
 
-//Called to Disconnect user from the app, clears tokens from the token store by calling clearCredentialser3
+// Called to disconnect the app from accessing the user's resources. Clears
+// tokens from the token store by calling clearCredentials
 - (IBAction)performDisconnect:(id)sender {
-    
-   
+
+    // Clear the credentials, cookies, and endpoints in NSUserDefaults.
     AuthenticationManager *authenticationManager = [AuthenticationManager sharedInstance];
     [authenticationManager clearCredentials];
-    [_resultsWebView loadHTMLString:@"</br><hr><p>You are logged out of O365. Please tap any of the operations to log in." baseURL:nil];
-    
+
+    // Clear the detail view.
+    [_resultsWebView loadHTMLString:@"" baseURL:nil];
+
+    // Turn off the disconnect button. It will be enabled the next time a snippet is run.
     dispatch_async(dispatch_get_main_queue(), ^{
-    self.disconnectButton.enabled = NO;
-        
+        self.disconnectButton.enabled = NO;
     });
-    
+
 }
 
+// Called everytime a snippet is run. Provides out put to detail view.
 -(void)updateUI {
     [_resultsWebView loadHTMLString:[self.detailItem description] baseURL:nil];
 }

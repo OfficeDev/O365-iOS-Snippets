@@ -25,9 +25,6 @@ NSString * const Office365DidDisconnectNotification = @"Office365DidDisconnectNo
 @property (readonly, nonatomic) NSString *authority;
 @property (readonly, nonatomic) NSString *clientId;
 
-
-
-
 @end
 
 @implementation AuthenticationManager
@@ -37,7 +34,7 @@ NSString * const Office365DidDisconnectNotification = @"Office365DidDisconnectNo
     self = [super init];
 
     if (self) {
-        
+
         // These are settings that you need to set based on your
         // client registration in Azure AD.
         _redirectURL = [NSURL URLWithString:REDIRECT_URL_STRING];
@@ -94,27 +91,24 @@ NSString * const Office365DidDisconnectNotification = @"Office365DidDisconnectNo
                                                                                                    andResourceId:resourceId
                                                                                                      andClientId:self.clientId
                                                                                                   andRedirectUri:self.redirectURL];
-                                       
+
                                        //Notification for when app is connected to O365
                                        [[NSNotificationCenter defaultCenter]postNotificationName:Office365DidConnectNotification object:nil];
-                                       
-                                       
+
+
                                        completionBlock(YES);
                                    }
                                }];
 
 }
 
-// Clear the ADAL token cache and remove this application's cookies.
-
+// Clear the ADAL token cache, remove this application's cookies, and clear out the
+// endpoints stored in NSUserDefaults.
 -(void)clearCredentials{
-    
-    //Notification for when app is disconnected from O365
-    [[NSNotificationCenter defaultCenter]postNotificationName:Office365DidDisconnectNotification object:nil];
-    
+
     id<ADTokenCacheStoring> cache = [ADAuthenticationSettings sharedInstance].defaultTokenCacheStore;
     ADAuthenticationError *error;
-    
+
     // Clear the token cache.
     if ([[cache allItemsWithError:&error] count] > 0)
         [cache removeAllWithError:&error];
@@ -125,6 +119,16 @@ NSString * const Office365DidDisconnectNotification = @"Office365DidDisconnectNo
     for (NSHTTPCookie *cookie in cookieStore.cookies) {
         [cookieStore deleteCookie:cookie];
     }
+
+    // Clear user defaults in case you change target tenant.
+    NSDictionary *keys = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+    for (NSString *key in keys)
+    {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+    }
+
+    //Notification for when app is disconnected from O365
+    [[NSNotificationCenter defaultCenter]postNotificationName:Office365DidDisconnectNotification object:nil];
 }
 
 @end
