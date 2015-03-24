@@ -25,6 +25,9 @@ The main benefits of using this sample:
 
 * Learn how to use the Azure Active Directory Authentication Library (ADAL) for Objective-C.
 
+**Note: If possible, please use this sample with a "non-work" or test account in Office 365. With the current version of the project, it does not clean up the created objects in your mailbox, calendar, or contacts. At this time you will have to remove these sample mails, contacts, and calendar events manually.**  
+
+
 ## Set up your environment
 
 To run the Office 365 code snippets for iOS you need the following:
