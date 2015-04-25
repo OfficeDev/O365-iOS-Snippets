@@ -267,7 +267,7 @@
 
             [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>We retrieved the following events from your calendar:</h3>"];
 
-            for(MSOutlookEvent *event in events) {
+            for(MSOutlookServicesEvent *event in events) {
                 [workingText appendFormat:@"<p>%@<br></p>", event.Subject];
             }
 
@@ -304,7 +304,7 @@
     NSDate *start = [NSDate date];
     NSDate *end = [[NSDate date] dateByAddingTimeInterval: 3600];
 
-    MSOutlookEvent *eventToCreate = [snippetLibrary outlookEventWithProperties:@[toEmailAddress]
+    MSOutlookServicesEvent *eventToCreate = [snippetLibrary outlookEventWithProperties:@[toEmailAddress]
                                                                            subject:subject
                                                                               body:body
                                                                              start:start
@@ -312,7 +312,7 @@
                                        ];
 
     [snippetLibrary createCalendarEvent:eventToCreate
-                         completion:^(MSOutlookEvent *addedEvent,  NSError *error) {
+                         completion:^(MSOutlookServicesEvent *addedEvent,  NSError *error) {
                              NSString *resultText;
                              BOOL success = (error== nil);
 
@@ -357,7 +357,7 @@
     NSDate *start = [NSDate date];
     NSDate *end = [[NSDate date] dateByAddingTimeInterval: 3600];
 
-    MSOutlookEvent *eventToCreate = [snippetLibrary outlookEventWithProperties:@[toEmailAddress]
+    MSOutlookServicesEvent *eventToCreate = [snippetLibrary outlookEventWithProperties:@[toEmailAddress]
                                                                        subject:subject
                                                                           body:body
                                                                          start:start
@@ -366,7 +366,7 @@
 
 
     [snippetLibrary createCalendarEvent:eventToCreate
-                                completion:^(MSOutlookEvent *addedEvent, NSError *error) {
+                                completion:^(MSOutlookServicesEvent *addedEvent, NSError *error) {
                                     if (!addedEvent) {
                                         NSString *errorMessage = [NSString stringWithFormat: @"FAIL<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to create and update an event in your Office 365 calendar. Please ensure your client ID and redirect URI have been set in the Authentication Controller, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
 
@@ -385,10 +385,10 @@
                                     dateString = [formatter stringFromDate:[NSDate date]];
 
                                     addedEvent.Subject = [addedEvent.Subject stringByAppendingFormat:@" updated at %@", dateString];
-                                    [addedEvent setRecurrence:SingleInstance];
+                                    [addedEvent setRecurrence:MSOutlookServices_EventType_SingleInstance];
 
                                     [snippetLibrary updateCalendarEvent:addedEvent
-                                                           completion:^(MSOutlookEvent *updatedEvent, NSError *error) {
+                                                           completion:^(MSOutlookServicesEvent *updatedEvent, NSError *error) {
                                                                BOOL success = (updatedEvent != nil);
                                                                NSString *resultText;
 
@@ -434,7 +434,7 @@
     NSDate *start = [NSDate date];
     NSDate *end = [[NSDate date] dateByAddingTimeInterval: 3600];
 
-    MSOutlookEvent *eventToCreate = [snippetLibrary outlookEventWithProperties:@[toEmailAddress]
+    MSOutlookServicesEvent *eventToCreate = [snippetLibrary outlookEventWithProperties:@[toEmailAddress]
                                                                        subject:subject
                                                                           body:body
                                                                          start:start
@@ -442,7 +442,7 @@
                                      ];
 
     [snippetLibrary createCalendarEvent:eventToCreate
-                                completion:^(MSOutlookEvent *addedEvent, NSError *error) {
+                                completion:^(MSOutlookServicesEvent *addedEvent, NSError *error) {
                                     if (!addedEvent) {
                                         NSString *errorMessage = [NSString stringWithFormat: @"FAIL<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to create and delete an event in your Office 365 calendar. Please ensure your client ID and redirect URI have been set in the Authentication Controller, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
 
@@ -498,7 +498,7 @@
 
             [workingText appendFormat:@"<h2><font color=#6AFB92>SUCCESS!</h2></font><h3>We retrieved the following contacts from Office 365:</h3>"];
 
-            for(MSOutlookContact *contact in contacts) {
+            for(MSOutlookServicesContact *contact in contacts) {
                 [workingText appendFormat:@"<p>%@<br></p>", contact.DisplayName];
             }
 
@@ -540,7 +540,7 @@
     NSString *mobilePhone1 = @"5554251212";
 
 
-    MSOutlookContact *contactToCreate = [snippetLibrary outlookContactWithProperties:@[emailAddress]
+    MSOutlookServicesContact *contactToCreate = [snippetLibrary outlookContactWithProperties:@[emailAddress]
                                                                              subject:givenName
                                                                                 body:displayName
                                                                              surname:surname
@@ -549,7 +549,7 @@
                                      ];
 
     [snippetLibrary createContact:contactToCreate
-                             completion:^(MSOutlookContact *addedContact,  NSError *error) {
+                             completion:^(MSOutlookServicesContact *addedContact,  NSError *error) {
                                  NSString *resultText;
                                  BOOL success = (error == nil);
 
@@ -598,7 +598,7 @@
     NSString *mobilePhone1 = @"5554251212";
 
 
-    MSOutlookContact *contactToCreate = [snippetLibrary outlookContactWithProperties:@[emailAddress]
+    MSOutlookServicesContact *contactToCreate = [snippetLibrary outlookContactWithProperties:@[emailAddress]
                                                                              subject:givenName
                                                                                 body:displayName
                                                                              surname:surname
@@ -609,7 +609,7 @@
 
 
     [snippetLibrary createContact:contactToCreate
-                             completion:^(MSOutlookContact *addedContact, NSError *error) {
+                             completion:^(MSOutlookServicesContact *addedContact, NSError *error) {
                                  if (!addedContact) {
                                      NSString *errorMessage = [NSString stringWithFormat: @"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to create and update a contact in Office 365. Please ensure your client ID and redirect URI have been set in the Authentication Controller, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
 
@@ -630,7 +630,7 @@
                                  addedContact.Surname = [addedContact.Surname stringByAppendingFormat:@" & updated at %@", dateString];
 
                                  [snippetLibrary updateContact:addedContact
-                                                          completion:^(MSOutlookContact *updatedContact, NSError *error) {
+                                                          completion:^(MSOutlookServicesContact *updatedContact, NSError *error) {
                                                               BOOL success = (updatedContact != nil);
                                                               NSString *resultText;
 
@@ -679,7 +679,7 @@
     NSString *mobilePhone1 = @"5554251212";
 
 
-    MSOutlookContact *contactToCreate = [snippetLibrary outlookContactWithProperties:@[emailAddress ]
+    MSOutlookServicesContact *contactToCreate = [snippetLibrary outlookContactWithProperties:@[emailAddress ]
                                                                              subject:givenName
                                                                                 body:displayName
                                                                              surname:surname
@@ -689,7 +689,7 @@
 
 
     [snippetLibrary createContact:contactToCreate
-                             completion:^(MSOutlookContact *addedContact, NSError *error) {
+                             completion:^(MSOutlookServicesContact *addedContact, NSError *error) {
                                  if (!addedContact) {
                                      NSString *errorMessage = [NSString stringWithFormat: @"FAIL<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to create and delete a contact in Office 365 Please ensure your client ID and redirect URI have been set in the Authentication Controller, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
 
@@ -746,7 +746,7 @@
 
             [workingText appendFormat:@"<h2><font color=#6AFB92>SUCCESS!</h2></font><h3>We retrieved the following items from your inbox:</h3>"];
 
-            for(MSOutlookMessage *message in messages) {
+            for(MSOutlookServicesMessage *message in messages) {
                 [workingText appendFormat:@"<p>%@<br></p>", message.Subject];
             }
 
@@ -782,7 +782,7 @@
     NSString *subject = [NSString stringWithFormat:@"New mail created on %@", dateString];
     NSString *body = @"Congratulations, you sent this message from the Snippets app!";
 
-    MSOutlookMessage *messageToSend = [snippetLibrary outlookMessageWithProperties:@[toEmailAddress]
+    MSOutlookServicesMessage *messageToSend = [snippetLibrary outlookMessageWithProperties:@[toEmailAddress]
                                                                            subject:subject
                                                                               body:body];
 
@@ -830,12 +830,12 @@
     NSString *subject = [NSString stringWithFormat:@"Sample draft message created at %@", dateString];
     NSString *body = @"Sample message from the Snippets App!";
 
-    MSOutlookMessage *messageToAdd = [snippetLibrary outlookMessageWithProperties:@[toEmailAddress]
+    MSOutlookServicesMessage *messageToAdd = [snippetLibrary outlookMessageWithProperties:@[toEmailAddress]
                                                                           subject:subject
                                                                              body:body];
 
     [snippetLibrary createDraftMailMessage:messageToAdd
-                                completion:^(MSOutlookMessage *addedMessage, NSError *error) {
+                                completion:^(MSOutlookServicesMessage *addedMessage, NSError *error) {
                                     if (!addedMessage) {
                                         NSString *errorMessage = [NSString stringWithFormat: @"FAIL<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to create and update a mail message in your O365 mail Drafts folder. Please ensure your client ID and redirect URI have been set in the Authentication Controller, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
 
@@ -856,7 +856,7 @@
                                     addedMessage.Subject = [addedMessage.Subject stringByAppendingFormat:@" & updated at %@", dateString];
 
                                     [snippetLibrary updateMailMessage:addedMessage
-                                                           completion:^(MSOutlookMessage *updatedMessage, NSError *error) {
+                                                           completion:^(MSOutlookServicesMessage *updatedMessage, NSError *error) {
                                                                BOOL success = (updatedMessage != nil);
                                                                NSString *resultText;
 
@@ -900,12 +900,12 @@
     NSString *subject = [NSString stringWithFormat:@"Sample draft message created at %@", dateString];
     NSString *body = @"Sample message from the Snippets App!";
 
-    MSOutlookMessage *messageToAdd = [snippetLibrary outlookMessageWithProperties:@[toEmailAddress]
+    MSOutlookServicesMessage *messageToAdd = [snippetLibrary outlookMessageWithProperties:@[toEmailAddress]
                                                                           subject:subject
                                                                              body:body];
 
     [snippetLibrary createDraftMailMessage:messageToAdd
-                                completion:^(MSOutlookMessage *addedMessage, NSError *error) {
+                                completion:^(MSOutlookServicesMessage *addedMessage, NSError *error) {
                                     if (!addedMessage) {
                                         NSString *errorMessage = [NSString stringWithFormat: @"FAIL<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to create and delete a mail message in your O365 mail Drafts folder. Please ensure your client ID and redirect URI have been set in the Authentication Controller, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
 
@@ -962,7 +962,7 @@
 
             [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>We retrieved the following files from OneDrive for Business:</h3>"];
 
-            for(MSSharePointItem *file in files)
+            for(MSOneDriveServicesItem *file in files)
                 {
                     if ([file.type isEqual: @"Folder"]){
                     [workingText appendFormat:@"<p>Folder: %@<br></p>", file.name];

@@ -12,7 +12,6 @@ static NSString * const REDIRECT_URL_STRING = @"ENTER_REDIRECT_URI_HERE";
 static NSString * const CLIENT_ID           = @"ENTER_CLIENT_ID_HERE";
 static NSString * const AUTHORITY           = @"https://login.microsoftonline.com/common";
 
-
 NSString * const Office365DidConnectNotification = @"Office365DidConnectNotification";
 NSString * const Office365DidDisconnectNotification = @"Office365DidDisconnectNotification";
 
@@ -87,10 +86,10 @@ NSString * const Office365DidDisconnectNotification = @"Office365DidDisconnectNo
                                                         forKey:@"LogInUser"];
                                        [userDefaults synchronize];
 
-                                       self.dependencyResolver = [[ADALDependencyResolver alloc] initWithContext:(id<ADAuthenticationContext>)self.authContext
-                                                                                                   andResourceId:resourceId
-                                                                                                     andClientId:self.clientId
-                                                                                                  andRedirectUri:self.redirectURL];
+                                       self.dependencyResolver = [[ADALDependencyResolver alloc] initWithContext:self.authContext
+                                                                                                  resourceId:resourceId
+                                                                                                     clientId:self.clientId
+                                                                                                  redirectUri:self.redirectURL];
 
                                        //Notification for when app is connected to O365
                                        [[NSNotificationCenter defaultCenter]postNotificationName:Office365DidConnectNotification object:nil];

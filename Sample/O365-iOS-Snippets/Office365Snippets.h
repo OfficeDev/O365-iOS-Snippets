@@ -10,32 +10,32 @@
 
 // Mail
 - (void)fetchMailMessages:(void(^)(NSArray *messages, NSError *error))completion;
-- (void)sendMailMessage:(MSOutlookMessage *)message
+- (void)sendMailMessage:(MSOutlookServicesMessage *)message
              completion:(void (^)(BOOL success, NSError *error))completion;
-- (void)createDraftMailMessage:(MSOutlookMessage *)message
-                    completion:(void (^)(MSOutlookMessage *addedMessage, NSError *error))completion;
-- (void)updateMailMessage:(MSOutlookMessage *)message
-               completion:(void (^)(MSOutlookMessage *updatedMessage, NSError *error))completion;
-- (void)deleteMailMessage:(MSOutlookMessage *)message
+- (void)createDraftMailMessage:(MSOutlookServicesMessage *)message
+                    completion:(void (^)(MSOutlookServicesMessage *addedMessage, NSError *error))completion;
+- (void)updateMailMessage:(MSOutlookServicesMessage *)message
+               completion:(void (^)(MSOutlookServicesMessage *updatedMessage, NSError *error))completion;
+- (void)deleteMailMessage:(MSOutlookServicesMessage *)message
                completion:(void (^)(BOOL success, NSError *error))completion;
 
 
 // Calendar
 - (void)fetchCalendarEvents:(void(^)(NSArray *events, NSError *error))completion;
-- (void)createCalendarEvent:(MSOutlookEvent *)event
-                    completion:(void (^)(MSOutlookEvent *addedEvent, NSError *error))completion;
-- (void)updateCalendarEvent:(MSOutlookEvent *)event
-               completion:(void (^)(MSOutlookEvent *updatedEvent, NSError *error))completion;
-- (void)deleteCalendarEvent:(MSOutlookEvent *)event
+- (void)createCalendarEvent:(MSOutlookServicesEvent *)event
+                    completion:(void (^)(MSOutlookServicesEvent *addedEvent, NSError *error))completion;
+- (void)updateCalendarEvent:(MSOutlookServicesEvent *)event
+               completion:(void (^)(MSOutlookServicesEvent *updatedEvent, NSError *error))completion;
+- (void)deleteCalendarEvent:(MSOutlookServicesEvent *)event
                completion:(void (^)(BOOL success, NSError *error))completion;
 
 // Contacts
 - (void)fetchContacts:(void(^)(NSArray *contacts, NSError *error))completion;
-- (void)createContact:(MSOutlookContact *)contact
-                 completion:(void (^)(MSOutlookContact *addedContact, NSError *error))completion;
-- (void)updateContact:(MSOutlookContact *)contact
-                 completion:(void (^)(MSOutlookContact *updatedContact, NSError *error))completion;
-- (void)deleteContact:(MSOutlookContact *)contact
+- (void)createContact:(MSOutlookServicesContact *)contact
+                 completion:(void (^)(MSOutlookServicesContact *addedContact, NSError *error))completion;
+- (void)updateContact:(MSOutlookServicesContact *)contact
+                 completion:(void (^)(MSOutlookServicesContact *updatedContact, NSError *error))completion;
+- (void)deleteContact:(MSOutlookServicesContact *)contact
                  completion:(void (^)(BOOL success, NSError *error))completion;
 
 
@@ -50,17 +50,17 @@
 
 
 // Helper Methods
-- (MSOutlookMessage *)outlookMessageWithProperties:(NSArray *)recipients
+- (MSOutlookServicesMessage *)outlookMessageWithProperties:(NSArray *)recipients
                                            subject:(NSString *)subject
                                               body:(NSString *)body;
 
-- (MSOutlookEvent *)outlookEventWithProperties:(NSArray *)attendees
+- (MSOutlookServicesEvent *)outlookEventWithProperties:(NSArray *)attendees
                                        subject:(NSString *)subject
                                           body:(NSString *)body
                                          start: (NSDate *)start
                                            end: (NSDate *)end;
 
-- (MSOutlookContact *)outlookContactWithProperties:(NSArray *)emailAddresses
+- (MSOutlookServicesContact *)outlookContactWithProperties:(NSArray *)emailAddresses
                                            subject:(NSString *)givenName
                                               body:(NSString *)displayName
                                            surname:(NSString *)surname

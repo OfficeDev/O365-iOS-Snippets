@@ -13,7 +13,7 @@
 // The access and refresh token will be cached. The next time a user attempts
 // to access the service, the access token will be issued. If the access token
 // has expired, the client will issue the refresh token to get a new access token.
-- (void)fetchOutlookClient:(void (^)(MSOutlookClient *outlookClient))callback
+- (void)fetchOutlookClient:(void (^)(MSOutlookServicesClient *outlookClient))callback
 {
     
     // Get an instance of the authentication manager controller.
@@ -28,10 +28,10 @@
                            completionHandler:^(BOOL authenticated) {
                                
                                
-        // Gets the MSOutlookClient with the URL for the Mail service.
+        // Gets the MSOutlookServicesClient with the URL for the Mail service.
         if(authenticated){
 
-            callback([[MSOutlookClient alloc] initWithUrl:[userDefaults stringForKey:@"Mail"]
+            callback([[MSOutlookServicesClient alloc] initWithUrl:[userDefaults stringForKey:@"Mail"]
                                        dependencyResolver:authenticationManager.dependencyResolver]);
             
         }
@@ -52,7 +52,7 @@
 }
 
 
--(void) fetchSharePointClient:(void (^)(MSSharePointClient *sharePointClient))callback{
+-(void) fetchSharePointClient:(void (^)(MSOneDriveServicesClient *sharePointClient))callback{
     
     // Get an instance of the authentication manager controller.
     AuthenticationManager* authenticationManager = [AuthenticationManager sharedInstance];
@@ -69,7 +69,7 @@
         if(authenticated){
             
             
-            callback([[MSSharePointClient alloc] initWithUrl:[userDefaults stringForKey:@"MyFiles"] dependencyResolver:authenticationManager.dependencyResolver]);
+            callback([[MSOneDriveServicesClient alloc] initWithUrl:[userDefaults stringForKey:@"MyFiles"] dependencyResolver:authenticationManager.dependencyResolver]);
             
         }
         

@@ -8,14 +8,13 @@
 #import <office365_exchange_sdk/office365_exchange_sdk.h>
 #import "MSDiscoveryClient.h"
 #import <office365_files_sdk/office365_files_sdk.h>
-//#import <office365_directory_sdk/office365_directory_sdk.h>
 
 
 @interface Office365ClientFetcher : NSObject
 
-- (void)fetchOutlookClient:(void (^)(MSOutlookClient *outlookClient))callback;
+- (void)fetchOutlookClient:(void (^)(MSOutlookServicesClient *outlookClient))callback;
 - (void)fetchDiscoveryClient:(void (^)(MSDiscoveryClient *discoveryClient))callback;
-- (void)fetchSharePointClient:(void (^)(MSSharePointClient *sharePointClient))callback;
+- (void)fetchSharePointClient:(void (^)(MSOneDriveServicesClient *sharePointClient))callback;
 
 @end
 
