@@ -65,10 +65,10 @@ The O365 iOS Snippet app already contains a podfile that will get the Office 365
 
     target ‘sample podfile’ do
 
-    pod 'ADALiOS', '~> 1.0.0'   # 1.0.0 < ver < 1.1.0
-    pod 'Office365/Outlook', '~> 0.8.3'
-    pod 'Office365/Discovery', '~> 0.8.3'
-    pod 'Office365/Files', '~> 0.8.3'
+    pod 'ADALIOS', '~> 1.2.0'
+    pod 'Office365/Outlook', '= 0.9.0'
+    pod 'Office365/Discovery', '= 0.9.0'
+    pod 'Office365/Files', '= 0.9.0'
 
     end
 
