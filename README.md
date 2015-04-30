@@ -90,7 +90,7 @@ Note: You should receive confirmation that these dependencies have been added to
 7.	Click the arrow icon on the bottom-right corner of the page.
 8.	On the **Application information** page, specify a **Redirect URI**, for this example, you can specify http://localhost/snippetAppProject, and then select the checkbox in the lower-right hand corner of the page. Remember this value for the below section **Getting the ClientID and RedirectUri into the project**.
 9.	Once the application has been successfully added, you will be taken to the **Quick Start** page for the application. From here, select **Configure** in the top menu.
-10.	Under **permissions to other applications**, add the following two permissions: Add the **Office 365 SharePoint Online** application, and select the **Edit or delete users' files** permission. Add the **Office 365 Exchange Online** application, and select the **Read and write access to users' mail**, **Send mail as a user**, **Have full access to users' calendars**, and **Have full access to users' contacts** permissions.
+10.	Under **permissions to other applications**, add the following two permissions: Add the **Office 365 SharePoint Online** application, and select the **Read and write user files** permission. Add the **Office 365 Exchange Online** application, and select the **Read and write user mail**, **Send mail as a user**, **Read and write user calendars**, **Read and write user contacts** permissions.
 11.	Copy the value specified for **Client ID** on the **Configure** page. Remember this value for the below section **Getting the ClientID and RedirectUri into the project**.
 12.	Click **Save** in the bottom menu.
 
