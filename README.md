@@ -15,7 +15,7 @@
 ## Introduction
 
 
-The Office 365 code snippets for iOS is a repository of code snippets that demonstrate how to work with Office 365 objects like mail, calendar, contacts, and files. This project uses the **Office 365 SDK for iOS** from [Microsoft Open Technologies, Inc (MS Open Tech)](http://msopentech.com). **This project has been tested against version 0.8.3 of the SDK.** It also uses the [Azure Active Directory Authentication Library (ADAL) for Objective-C](https://github.com/AzureAD/azure-activedirectory-library-for-objc).
+The Office 365 code snippets for iOS is a repository of code snippets that demonstrate how to work with Office 365 objects like mail, calendar, contacts, and files. This project uses the **Office 365 SDK for iOS** from [Microsoft Open Technologies, Inc (MS Open Tech)](http://msopentech.com). **This project has been tested against version 0.9.0 of the SDK.** It also uses the [Azure Active Directory Authentication Library (ADAL) for Objective-C](https://github.com/AzureAD/azure-activedirectory-library-for-objc).
 
 The main benefits of using this sample:
 
