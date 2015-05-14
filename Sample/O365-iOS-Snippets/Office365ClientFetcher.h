@@ -12,9 +12,9 @@
 
 @interface Office365ClientFetcher : NSObject
 
-- (void)fetchOutlookClient:(void (^)(MSOutlookServicesClient *outlookClient))callback;
+- (void)fetchOutlookClient:(void (^)(MSOutlookClient *outlookClient))callback;
 - (void)fetchDiscoveryClient:(void (^)(MSDiscoveryClient *discoveryClient))callback;
-- (void)fetchSharePointClient:(void (^)(MSOneDriveServicesClient *sharePointClient))callback;
+- (void)fetchSharePointClient:(void (^)(MSSharePointClient *sharePointClient))callback;
 
 @end
 
