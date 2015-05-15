@@ -14,11 +14,12 @@
              completion:(void (^)(BOOL success, NSError *error))completion;
 - (void)createDraftMailMessage:(MSOutlookServicesMessage *)message
                     completion:(void (^)(MSOutlookServicesMessage *addedMessage, NSError *error))completion;
+- (void)createAndSendHTMLMailMessage:(NSMutableArray *)toRecipients
+                          completion:(void (^)(BOOL success, NSError *error))completion;
 - (void)updateMailMessage:(MSOutlookServicesMessage *)message
                completion:(void (^)(MSOutlookServicesMessage *updatedMessage, NSError *error))completion;
 - (void)deleteMailMessage:(MSOutlookServicesMessage *)message
                completion:(void (^)(BOOL success, NSError *error))completion;
-
 
 // Calendar
 - (void)fetchCalendarEvents:(void(^)(NSArray *events, NSError *error))completion;

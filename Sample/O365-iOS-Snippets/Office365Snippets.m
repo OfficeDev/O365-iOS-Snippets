@@ -209,6 +209,45 @@
     }];
 }
 
+// Creates and sends an email message to a single recipient, with a subject, an HTML body and save a copy in the sender's
+// sentitems folder.
+- (void)createAndSendHTMLMailMessage:(NSMutableArray *)toRecipients
+                          completion:(void (^)(BOOL success, NSError *error))completion
+{
+    // Get the client and get the operations for sending a mail.
+    Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
+    
+    [clientFetcher fetchOutlookClient:^(MSOutlookServicesClient *client) {
+        MSOutlookServicesUserFetcher *userFetcher = [client getMe];
+        MSOutlookServicesUserOperations *operations = [userFetcher operations];
+        
+        // Form the email message.
+        MSOutlookServicesMessage *message = [[MSOutlookServicesMessage alloc] init];
+        
+        message.Subject = @"Here's the subject";
+        
+        message.Body = [[MSOutlookServicesItemBody alloc] init];
+        message.Body.Content = @"<!DOCTYPE html><html><body>Here's the body.</body></html>";
+        message.Body.ContentType = MSOutlookServices_BodyType_HTML;
+        message.ToRecipients = [toRecipients copy];
+    
+        // Send the email and get the results. 
+        NSURLSessionTask *task = [operations sendMailWithMessage:message saveToSentItems:YES callback:^(int returnValue, MSODataException *error) {
+            if (completion)
+            {
+                if (returnValue == 0)
+                    completion(YES, error);
+                else
+                    completion(NO, error);
+            }
+            
+            
+        } ];
+        
+        [task resume];
+    }];
+}
+
 //Updates an email message on the server
 - (void)updateMailMessage:(MSOutlookServicesMessage *)message
                completion:(void (^)(MSOutlookServicesMessage *updatedMessage, NSError *error))completion

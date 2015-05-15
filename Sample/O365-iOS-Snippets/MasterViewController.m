@@ -103,6 +103,7 @@
     NSMutableArray *mailRows = [[NSMutableArray alloc] init];
     [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Get messages"   action:@selector(performFetchMailMessages)]];
     [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Create message" action:@selector(performCreateMailMessage)]];
+    [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Create & send HTML message" action:@selector(performCreateAndSendHTMLMailMessage)]];
     [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Update message" action:@selector(performUpdateMailMessage)]];
     [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Delete message" action:@selector(performDeleteMailMessage)]];
 
@@ -938,6 +939,46 @@
                                                                                   snippetName:@"Delete Message"];
                                                            }];
                                 }];
+}
+
+- (void)performCreateAndSendHTMLMailMessage
+{
+    NSLog(@"Action: %@", NSStringFromSelector(_cmd));
+    
+    Office365Snippets *snippetLibrary = [[Office365Snippets alloc] init];
+    
+    [self.spinner startAnimating];
+    
+    // Create the recipient that will receive the email.
+    NSString *toEmailAddress = [[NSUserDefaults standardUserDefaults] objectForKey:@"LogInUser"];
+    MSOutlookServicesEmailAddress *emailAddress = [[MSOutlookServicesEmailAddress alloc] init];
+    emailAddress.address = toEmailAddress;
+    MSOutlookServicesRecipient *recipient = [[MSOutlookServicesRecipient alloc] init];
+    recipient.emailAddress = emailAddress;
+    NSMutableArray *toRecipients = [[NSMutableArray alloc] init];
+    [toRecipients addObject:recipient];
+    
+    [snippetLibrary createAndSendHTMLMailMessage:toRecipients completion:^(BOOL success, NSError *error) {
+        
+        NSString *resultText;
+        
+        if (!success) {
+            resultText = [NSString stringWithFormat:@"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p>", [error localizedDescription]];
+        }
+        else {
+            NSMutableString *workingText = [[NSMutableString alloc] init];
+            [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>We sent a new mail message and put a copy in your Sent Items folder.</h3>"];
+            [workingText appendFormat:@"</br><hr><p>For the code, see createAndSendHTMLMailMessage in Office365Snippets.m."];
+            
+            resultText = workingText;
+        }
+        
+        [self updateUIWithResultString:resultText
+                               success:success
+                        snippetService:@"Mail"
+                           snippetName:@"Create and send HTML mail message"];
+        
+    }];
 }
 
 
