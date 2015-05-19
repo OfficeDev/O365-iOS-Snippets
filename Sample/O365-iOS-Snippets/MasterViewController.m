@@ -75,6 +75,7 @@
 {
     [super viewDidAppear:animated];
 
+    
     //Create a spinner to use in the app for long running operations
     if (!self.spinner)
     {
@@ -105,6 +106,8 @@
     [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Create message" action:@selector(performCreateMailMessage)]];
     [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Update message" action:@selector(performUpdateMailMessage)]];
     [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Delete message" action:@selector(performDeleteMailMessage)]];
+    [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Reply to message" action:@selector(performReplyToMailMessage)]];
+    [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Create draft reply" action:@selector(createDraftReplyMailMessage)]];
 
     NSMutableArray *filesRows = [[NSMutableArray alloc] init];
     [filesRows addObject:[SnippetInfo snippetInfoWithName:@"Get files" action:@selector(performFetchFiles)]];
@@ -907,7 +910,7 @@
     [snippetLibrary createDraftMailMessage:messageToAdd
                                 completion:^(MSOutlookMessage *addedMessage, NSError *error) {
                                     if (!addedMessage) {
-                                        NSString *errorMessage = [NSString stringWithFormat: @"FAIL<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to create and delete a mail message in your O365 mail Drafts folder. Please ensure your client ID and redirect URI have been set in the Authentication Controller, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
+                                        NSString *errorMessage = [NSString stringWithFormat: @"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to create and delete a mail message in your O365 mail Drafts folder. Please ensure your client ID and redirect URI have been set in the Authentication Controller, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
 
                                         [self updateUIWithResultString:errorMessage
                                                                success:NO
@@ -938,6 +941,130 @@
                                                                                   snippetName:@"Delete Message"];
                                                            }];
                                 }];
+}
+
+- (void)performReplyToMailMessage
+{
+    NSLog(@"Action: %@", NSStringFromSelector(_cmd));
+    
+    Office365Snippets *snippetLibrary = [[Office365Snippets alloc] init];
+    
+    [self.spinner startAnimating];
+    
+    //We will take the first email message in the logged in user's inbox and reply to it
+    [snippetLibrary fetchMailMessages:^(NSArray *messages, NSError *error) {
+
+        if (!messages || error) {
+            NSString *errorMessage = [NSString stringWithFormat: @"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to reply to an email message in your inbox. Please ensure your client ID and redirect URI have been set in the Authentication Controller, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
+            
+            [self updateUIWithResultString:errorMessage
+                                   success:NO
+                            snippetService:@"Mail"
+                               snippetName:@"Reply to message"];
+            return;
+        }
+        else {
+            //Taking the first message from the logged in user's inbox
+            MSOutlookMessage *inboxMailMessage = [messages objectAtIndex:0];
+            
+            //Sends reply message
+            [snippetLibrary replyToMailMessage:inboxMailMessage completion:^(int returnValue, NSError *error) {
+                
+                NSString *resultText;
+                
+                if (returnValue ==! 0 || error) {
+                    NSString *errorMessage = [NSString stringWithFormat:@"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to reply to an email message in your inbox. Please ensure your client ID and redirect URI have been set in the Authentication Manager, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
+                    
+                    [self updateUIWithResultString:errorMessage
+                                           success:NO
+                                    snippetService:@"Mail"
+                                       snippetName:@"Reply to message"];
+                    return;
+                    
+                }
+                else {
+                    NSMutableString *workingText = [[NSMutableString alloc] init];
+                    [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>We replied to a message in your inbox.</h3>"];
+                    [workingText appendFormat:@"</br><hr><p>For the code, see replyToMailMessage in Office365Snippets.m."];
+                    
+                    resultText = workingText;
+                }
+                
+                [self updateUIWithResultString:resultText
+                                       success:YES
+                                snippetService:@"Mail"
+                                   snippetName:@"Reply to message"];
+                
+            }];
+            
+        }
+        
+    }];
+    
+}
+
+
+- (void)createDraftReplyMailMessage
+{
+    NSLog(@"Action: %@", NSStringFromSelector(_cmd));
+    
+    Office365Snippets *snippetLibrary = [[Office365Snippets alloc] init];
+    
+    [self.spinner startAnimating];
+    
+    
+    //We will take the first email message in the logged in user's inbox and reply to it
+    [snippetLibrary fetchMailMessages:^(NSArray *messages, NSError *error) {
+        
+        if (!messages || error) {
+            NSString *errorMessage = [NSString stringWithFormat: @"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to create a draft reply message in your inbox. Please ensure your client ID and redirect URI have been set in the Authentication Controller, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
+            
+            [self updateUIWithResultString:errorMessage
+                                   success:NO
+                            snippetService:@"Mail"
+                               snippetName:@"Create draft reply"];
+            return;
+        }
+        else {
+            //Taking the first message from the logged in user's inbox
+            MSOutlookMessage *inboxMailMessage = [messages objectAtIndex:0];
+            
+            //Creates draft reply message in draft folder
+            [snippetLibrary createDraftReplyMessage:inboxMailMessage completion:^(MSOutlookMessage *replyMessage, NSError *error) {
+                
+                NSString *resultText;
+                BOOL success = (replyMessage != nil);
+                
+                if (error) {
+                    NSString *errorMessage = [NSString stringWithFormat:@"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to create a draft reply message in your inbox. Please ensure your client ID and redirect URI have been set in the Authentication Manager, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
+                    
+                    [self updateUIWithResultString:errorMessage
+                                           success:NO
+                                    snippetService:@"Mail"
+                                       snippetName:@"Create draft reply"];
+                    return;
+                    
+                }
+                else {
+                    NSMutableString *workingText = [[NSMutableString alloc] init];
+                    [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>We created a draft reply message in your inbox.</h3>"];
+                    [workingText appendFormat:@"</br><hr><p>For the code, see createDraftMailMessage in Office365Snippets.m."];
+                    
+                    resultText = workingText;
+                }
+                
+                [self updateUIWithResultString:resultText
+                                       success:success
+                                snippetService:@"Mail"
+                                   snippetName:@"Create draft reply"];
+                
+            }];
+            
+        }
+        
+    }];
+    
+    
 }
 
 

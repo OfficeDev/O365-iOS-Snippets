@@ -251,6 +251,55 @@
 
 }
 
+//Replies to a single recipient in a mail message
+-(void)replyToMailMessage:(MSOutlookMessage*)message
+               completion:(void (^)(int success, MSODataException *error))completion
+{
+    
+    Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
+    
+    [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
+        MSOutlookUserFetcher *userFetcher = [client getMe];
+        MSOutlookMessageCollectionFetcher *messageCollectionFetcher = [userFetcher getMessages];
+        MSOutlookMessageFetcher *messageFetcher = [messageCollectionFetcher getById:message.Id];
+        
+        
+        //To do a reply all (multiple recipients) you can replace replyWithComment to replyAllWithComment
+        NSURLSessionTask *task = [[messageFetcher operations] replyWithComment:@"Testing reply snippet" callback:^(int returnValue, MSODataException *error) {
+            
+            
+            completion(returnValue, error);
+            
+        }];
+        
+        [task resume];
+    }];
+    
+}
+
+//Creates a draft reply email message in inbox
+-(void)createDraftReplyMessage:(MSOutlookMessage*)message
+                    completion:(void (^)(MSOutlookMessage *replyMessage, NSError *error))completion
+{
+    
+    Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
+    
+    [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
+        MSOutlookUserFetcher *userFetcher = [client getMe];
+        MSOutlookMessageCollectionFetcher *messageCollectionFetcher = [userFetcher getMessages];
+        MSOutlookMessageFetcher *messageFetcher = [messageCollectionFetcher getById:message.Id];
+        
+        NSURLSessionTask *task = [[messageFetcher operations] createReplyWithCallback:^(MSOutlookMessage *replyMessage, MSODataException *error) {
+            
+            completion(replyMessage, error);
+            
+        }];
+        
+        [task resume];
+    }];
+    
+}
+
 
 
 #pragma mark - Calendar
