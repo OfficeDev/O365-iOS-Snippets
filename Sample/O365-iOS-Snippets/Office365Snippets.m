@@ -30,7 +30,7 @@
     if (!_o365ClientFetcher) {
         _o365ClientFetcher = [[Office365ClientFetcher alloc] init];
     }
-    
+
     return _o365ClientFetcher;
 }
 
@@ -47,26 +47,26 @@
                                               body:(NSString *)body
 {
     MSOutlookMessage *message = [[MSOutlookMessage alloc] init];
-    
+
     message.Subject = subject;
-    
+
     message.Body = [[MSOutlookItemBody alloc] init];
     message.Body.Content = body;
     message.Body.ContentType = MSOutlook_BodyType_Text;
-    
+
     NSMutableArray *toRecipients = [[NSMutableArray alloc] init];
-    
+
     for (NSString *emailAddress in recipients) {
         MSOutlookRecipient *recipient = [[MSOutlookRecipient alloc] init];
-        
+
         recipient.EmailAddress = [[MSOutlookEmailAddress alloc] init];
         recipient.EmailAddress.Address = emailAddress;
-        
+
         [toRecipients addObject:recipient];
     }
-    
+
     message.ToRecipients = [toRecipients copy];
-    
+
     return message;
 }
 
@@ -79,30 +79,30 @@
 {
 
     MSOutlookEvent *event = [[MSOutlookEvent alloc] init];
-    
+
     event.Subject = subject;
     [event setStart:start];
     [event setEnd:end];
     [event setRecurrence:MSOutlook_EventType_SingleInstance];
-    
-    
-    
+
+
+
     event.Body = [[MSOutlookItemBody alloc] init];
     event.Body.Content = body;
     event.Body.ContentType = MSOutlook_BodyType_Text;
-    
+
     NSMutableArray *toAttendees = [[NSMutableArray alloc] init];
     for (NSString *emailAddress in attendees) {
         MSOutlookAttendee *attendee = [[MSOutlookAttendee alloc] init];
-        
+
         attendee.EmailAddress = [[MSOutlookEmailAddress alloc] init];
         attendee.EmailAddress.Address = emailAddress;
-        
+
         [toAttendees addObject:attendee];
     }
-    
+
     event.Attendees = [toAttendees copy];
-    
+
     return event;
 }
 
@@ -114,31 +114,31 @@
                                              title: (NSString *)title
                                       mobilePhone1: (NSString *)mobilePhone1
 {
-    
+
     MSOutlookContact *contact = [[MSOutlookContact alloc] init];
-    
+
     contact.GivenName = givenName;
     contact.Surname = surname;
     contact.DisplayName = displayName;
-    
+
     contact.Title = title;
     contact.MobilePhone1 = mobilePhone1;
-    
-    
+
+
     NSMutableArray<MSOutlookEmailAddress> *contactEmailAddresses = (NSMutableArray<MSOutlookEmailAddress>*)
     [[NSMutableArray alloc] init];
     for (NSString *emailAddress in emailAddresses) {
-        
+
         MSOutlookEmailAddress *email = [[MSOutlookEmailAddress alloc]init];
         [email setAddress:emailAddress];
-        
+
         [contactEmailAddresses addObject:email];
-        
+
     }
-    
-    
+
+
     [contact setEmailAddresses:contactEmailAddresses];
-    
+
     return contact;
 }
 
@@ -184,7 +184,7 @@
 
             completion(success, error);
         }];
-        
+
         [task resume];
     }];
 }
@@ -204,6 +204,45 @@
                                                              callback:^(MSOutlookMessage *addedMessage, MSODataException *error) {
                                                                  completion(addedMessage, error);
                                                              }];
+
+        [task resume];
+    }];
+}
+
+// Creates and sends an email message to a single recipient, with a subject, an HTML body and save a copy in the sender's
+// sentitems folder.
+- (void)createAndSendHTMLMailMessage:(NSMutableArray *)toRecipients
+                          completion:(void (^)(BOOL success, NSError *error))completion
+{
+    // Get the client and get the operations for sending a mail.
+    Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
+
+    [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
+        MSOutlookUserFetcher *userFetcher = [client getMe];
+        MSOutlookUserOperations *operations = [userFetcher operations];
+
+        // Form the email message.
+        MSOutlookMessage *message = [[MSOutlookMessage alloc] init];
+
+        message.Subject = @"Here's the subject";
+
+        message.Body = [[MSOutlookItemBody alloc] init];
+        message.Body.Content = @"<!DOCTYPE html><html><body>Here's the body.</body></html>";
+        message.Body.ContentType = MSOutlook_BodyType_HTML;
+        message.ToRecipients = [toRecipients copy];
+
+        // Send the email and get the results.
+        NSURLSessionTask *task = [operations sendMailWithMessage:message saveToSentItems:YES callback:^(int returnValue, MSODataException *error) {
+            if (completion)
+            {
+                if (returnValue == 0)
+                    completion(YES, error);
+                else
+                    completion(NO, error);
+            }
+
+
+        } ];
 
         [task resume];
     }];
@@ -255,49 +294,49 @@
 -(void)replyToMailMessage:(MSOutlookMessage*)message
                completion:(void (^)(int success, MSODataException *error))completion
 {
-    
+
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
-    
+
     [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
         MSOutlookUserFetcher *userFetcher = [client getMe];
         MSOutlookMessageCollectionFetcher *messageCollectionFetcher = [userFetcher getMessages];
         MSOutlookMessageFetcher *messageFetcher = [messageCollectionFetcher getById:message.Id];
-        
-        
+
+
         //To do a reply all (multiple recipients) you can replace replyWithComment to replyAllWithComment
         NSURLSessionTask *task = [[messageFetcher operations] replyWithComment:@"Testing reply snippet" callback:^(int returnValue, MSODataException *error) {
-            
-            
+
+
             completion(returnValue, error);
-            
+
         }];
-        
+
         [task resume];
     }];
-    
+
 }
 
 //Creates a draft reply email message in inbox
 -(void)createDraftReplyMessage:(MSOutlookMessage*)message
                     completion:(void (^)(MSOutlookMessage *replyMessage, NSError *error))completion
 {
-    
+
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
-    
+
     [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
         MSOutlookUserFetcher *userFetcher = [client getMe];
         MSOutlookMessageCollectionFetcher *messageCollectionFetcher = [userFetcher getMessages];
         MSOutlookMessageFetcher *messageFetcher = [messageCollectionFetcher getById:message.Id];
-        
+
         NSURLSessionTask *task = [[messageFetcher operations] createReplyWithCallback:^(MSOutlookMessage *replyMessage, MSODataException *error) {
-            
+
             completion(replyMessage, error);
-            
+
         }];
-        
+
         [task resume];
     }];
-    
+
 }
 
 
@@ -308,18 +347,18 @@
 - (void)fetchCalendarEvents:(void (^)(NSArray *events, NSError *error))completion
 {
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
-    
+
     // Get the MSOutlookClient. This object contains access tokens and methods to call the service.
     [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
         // Retrieve mail messages from O365 and pass the status to the callback. Uses a default page size of 10.
         // This results in a call to the service.
         MSOutlookUserFetcher *userFetcher = [client getMe];
         MSOutlookEventCollectionFetcher *eventFetcher = [userFetcher getEvents];
-        
+
         NSURLSessionTask *task = [eventFetcher readWithCallback:^(NSArray *events, MSODataException *error) {
             completion(events, error);
         }];
-        
+
         [task resume];
     }];
 }
@@ -329,16 +368,16 @@
                     completion:(void (^)(MSOutlookEvent *addedEvent, NSError *error))completion
 {
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
-    
+
     [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
         MSOutlookUserFetcher *userFetcher = [client getMe];
         MSOutlookEventCollectionFetcher *eventCollectionFetcher = [userFetcher getEvents];
-        
+
         NSURLSessionTask *task = [eventCollectionFetcher addEvent:event
                                                          callback:^(MSOutlookEvent *addedEvent, MSODataException *error) {
                                                              completion(addedEvent, error);
                                                          }];
-        
+
         [task resume];
     }];
 }
@@ -349,17 +388,17 @@
 {
 
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
-    
+
     [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
         MSOutlookUserFetcher *userFetcher = [client getMe];
         MSOutlookEventCollectionFetcher *eventCollectionFetcher = [userFetcher getEvents];
         MSOutlookEventFetcher *eventFetcher = [eventCollectionFetcher getById:event.Id];
-        
+
         NSURLSessionTask *task = [eventFetcher updateEvent:event
                                     callback:^(MSOutlookEvent *updatedEvent, MSODataException *error) {
                                         completion(updatedEvent, error);
                                     }];
-        
+
         [task resume];
     }];
 }
@@ -369,21 +408,21 @@
                completion:(void (^)(BOOL, NSError *))completion
 {
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
-    
+
     [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
         MSOutlookUserFetcher *userFetcher = [client getMe];
         MSOutlookEventCollectionFetcher *eventCollectionFetcher = [userFetcher getEvents];
         MSOutlookEventFetcher *eventFetcher = [eventCollectionFetcher getById:event.Id];
-        
+
         NSURLSessionTask *task = [eventFetcher deleteEvent:^(int status, MSODataException *error) {
             BOOL success = (error == nil);
-            
+
             completion(success, error);
         }];
-        
+
         [task resume];
     }];
-    
+
 }
 
 #pragma mark - Contacts
@@ -392,18 +431,18 @@
 - (void)fetchContacts:(void (^)(NSArray *contacts, NSError *error))completion
 {
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
-    
+
     // Get the MSOutlookClient. This object contains access tokens and methods to call the service.
     [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
         // Retrieve mail messages from O365 and pass the status to the callback. Uses a default page size of 10.
         // This results in a call to the service.
         MSOutlookUserFetcher *userFetcher = [client getMe];
         MSOutlookContactCollectionFetcher *contactFetcher = [userFetcher getContacts];
-        
+
         NSURLSessionTask *task = [contactFetcher readWithCallback:^(NSArray *contacts, MSODataException *error) {
             completion(contacts, error);
         }];
-        
+
         [task resume];
     }];
 }
@@ -413,16 +452,16 @@
                  completion:(void (^)(MSOutlookContact *addedContact, NSError *error))completion
 {
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
-    
+
     [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
         MSOutlookUserFetcher *userFetcher = [client getMe];
         MSOutlookContactCollectionFetcher *contactCollectionFetcher = [userFetcher getContacts];
-        
+
         NSURLSessionTask *task = [contactCollectionFetcher addContact:contact
                                                              callback:^(MSOutlookContact *addedContact, MSODataException *error) {
                                                              completion(addedContact, error);
                                                          }];
-        
+
         [task resume];
     }];
 }
@@ -432,17 +471,17 @@
                  completion:(void (^)(MSOutlookContact *updatedContact, NSError *error))completion
 {
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
-    
+
     [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
         MSOutlookUserFetcher *userFetcher = [client getMe];
         MSOutlookContactCollectionFetcher *contactCollectionFetcher = [userFetcher getContacts];
         MSOutlookContactFetcher *contactFetcher = [contactCollectionFetcher getById:contact.Id];
-        
+
         NSURLSessionTask *task = [contactFetcher updateContact:contact
                                                       callback:^(MSOutlookContact *updatedContact, MSODataException *error) {
                                                           completion(updatedContact, error);
                                                       }];
-        
+
         [task resume];
     }];
 }
@@ -452,21 +491,21 @@
                  completion:(void (^)(BOOL, NSError *))completion
 {
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
-    
+
     [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
         MSOutlookUserFetcher *userFetcher = [client getMe];
         MSOutlookContactCollectionFetcher *contactCollectionFetcher = [userFetcher getContacts];
         MSOutlookContactFetcher *contactFetcher = [contactCollectionFetcher getById:contact.Id];
-        
+
         NSURLSessionTask *task = [contactFetcher deleteContact:^(int status, MSODataException *error) {
             BOOL success = (error == nil);
-            
+
             completion(success, error);
         }];
-        
+
         [task resume];
     }];
-    
+
 }
 
 
@@ -477,21 +516,21 @@
 - (void)fetchFiles:(void (^)(NSArray *files, NSError *error))completion
     {
         Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
-        
+
         //Get the SharePoint client. This object contains access tokens and methods to call the service.
         [clientFetcher fetchSharePointClient:^(MSSharePointClient *sharePointClient) {
 
             // This results in a call to the service.
-            
+
             MSSharePointItemCollectionFetcher *fileFetcher = [sharePointClient getfiles];
             // Retrieve files from O365 and pass the status to the callback. Uses a default page size of 10.
             NSURLSessionTask *task = [fileFetcher readWithCallback:^(NSArray *files, MSODataException *error) {
                 completion(files, error);
             }];
-                    
+
             [task resume];
             }];
-        
+
     }
 
 
@@ -508,37 +547,37 @@
     // service. This results in two calls: one to authenticate, and one to get the
     // URLs. ADAL will cache the access and refresh tokens so you won't need to
     // provide credentials unless you sign out.
-    
+
     // Get the discovery client. First time this is ran you will be prompted
     // to provide your credentials which will authenticate you with the service.
     // The application will get an access token in the response.
     [self.o365ClientFetcher   fetchDiscoveryClient:^(MSDiscoveryClient *discoveryClient) {
         MSDiscoveryServiceInfoCollectionFetcher *servicesInfoFetcher = [discoveryClient getservices];
-        
+
         // Call the Discovery Service and get back an array of service endpoint information.
         NSURLSessionTask *servicesTask = [servicesInfoFetcher readWithCallback:^(NSArray *serviceEndpoints, MSODataException *error) {
             if (serviceEndpoints) {
                 // Here is where we cache the service URLs returned by the Discovery Service. You may not
                 // need to call the Discovery Service again until either this cache is removed, or you
                 // get an error that indicates that the endpoint is no longer valid.
-                
-                
+
+
                 NSUserDefaults *userDefaults = [[NSUserDefaults alloc]init];
-                
+
                 for(MSDiscoveryServiceInfo *service in serviceEndpoints) {
                     [userDefaults setObject:service.serviceEndpointUri forKey:service.capability];
                     [userDefaults setObject:service.serviceResourceId forKey:[service.capability stringByAppendingString:@"ResourceID"]];
                 }
 
-                
+
                 [userDefaults synchronize];
-                
-  
+
+
             }
             else {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     NSLog(@"Error in the authentication: %@", error);
-                    
+
                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
                                                                     message:@"Authentication failed. This may be because the Internet connection is offline  or perhaps the credentials are incorrect. Check the log for errors and try again."
                                                                    delegate:nil
@@ -548,10 +587,10 @@
                 });
             }
         }];
-        
+
         [servicesTask resume];
     }];
-    
+
 
 }
 @end

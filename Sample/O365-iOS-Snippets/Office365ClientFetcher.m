@@ -15,25 +15,25 @@
 // has expired, the client will issue the refresh token to get a new access token.
 - (void)fetchOutlookClient:(void (^)(MSOutlookClient *outlookClient))callback
 {
-    
+
     // Get an instance of the authentication manager controller.
     AuthenticationManager *authenticationManager = [AuthenticationManager sharedInstance];
-    
+
     // This is where the client will have to provide credentials the first time.
     // The client will get back the access and refresh tokens and store them
     // in a cache.
-    
+
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     [authenticationManager acquireAuthTokenWithResourceId: [userDefaults stringForKey:@"MailResourceID"]
                            completionHandler:^(BOOL authenticated) {
-                               
-                               
+
+
         // Gets the MSOutlookClient with the URL for the Mail service.
         if(authenticated){
 
             callback([[MSOutlookClient alloc] initWithUrl:[userDefaults stringForKey:@"Mail"]
                                        dependencyResolver:authenticationManager.dependencyResolver]);
-            
+
         }
         else{
             //Display an alert in case of an error
@@ -45,7 +45,7 @@
                                                       cancelButtonTitle:@"OK"
                                                       otherButtonTitles:nil];
                 [alert show];
-                
+
             });
         }
     }];
@@ -53,26 +53,26 @@
 
 
 -(void) fetchSharePointClient:(void (^)(MSSharePointClient *sharePointClient))callback{
-    
+
     // Get an instance of the authentication manager controller.
     AuthenticationManager* authenticationManager = [AuthenticationManager sharedInstance];
-    
+
     // Get the cached resource and URL information that was returned by discovery.
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    
+
     // This is where the client will have to provide credentials the first time.
     // The client will get back the access and refresh tokens and store them
     // in a cache.
-    
+
     [authenticationManager acquireAuthTokenWithResourceId:[userDefaults stringForKey:@"MyFilesResourceID"]
                                         completionHandler:^(BOOL authenticated) {
         if(authenticated){
-            
-            
+
+
             callback([[MSSharePointClient alloc] initWithUrl:[userDefaults stringForKey:@"MyFiles"] dependencyResolver:authenticationManager.dependencyResolver]);
-            
+
         }
-        
+
         else{
             //Display an alert in case of an error
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -83,13 +83,13 @@
                                                       cancelButtonTitle:@"OK"
                                                       otherButtonTitles:nil];
                 [alert show];
-                
+
             });
-            
+
         }
     }];
-    
-    
+
+
    }
 
 
@@ -99,7 +99,7 @@
 {
 
     AuthenticationManager *authenticationManager = [AuthenticationManager sharedInstance];
-    
+
     [authenticationManager acquireAuthTokenWithResourceId:@"https://api.office.com/discovery/"
                                         completionHandler:^(BOOL authenticated) {
         if (authenticated) {

@@ -12,8 +12,11 @@
 - (void)fetchMailMessages:(void(^)(NSArray *messages, NSError *error))completion;
 - (void)sendMailMessage:(MSOutlookMessage *)message
              completion:(void (^)(BOOL success, NSError *error))completion;
+
 - (void)createDraftMailMessage:(MSOutlookMessage *)message
                     completion:(void (^)(MSOutlookMessage *addedMessage, NSError *error))completion;
+- (void)createAndSendHTMLMailMessage:(NSMutableArray *)toRecipients
+                          completion:(void (^)(BOOL success, NSError *error))completion;
 - (void)updateMailMessage:(MSOutlookMessage *)message
                completion:(void (^)(MSOutlookMessage *updatedMessage, NSError *error))completion;
 - (void)deleteMailMessage:(MSOutlookMessage *)message
@@ -22,7 +25,6 @@
                 completion:(void (^)(int success, MSODataException *error))completion;
 - (void)createDraftReplyMessage:(MSOutlookMessage*)message
                     completion:(void (^)(MSOutlookMessage *replyMessage, NSError *error))completion;
-
 
 // Calendar
 - (void)fetchCalendarEvents:(void(^)(NSArray *events, NSError *error))completion;
