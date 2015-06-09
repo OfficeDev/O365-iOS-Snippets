@@ -85,8 +85,6 @@
     [event setEnd:end];
     [event setRecurrence:MSOutlook_EventType_SingleInstance];
 
-
-
     event.Body = [[MSOutlookItemBody alloc] init];
     event.Body.Content = body;
     event.Body.ContentType = MSOutlook_BodyType_Text;
@@ -292,7 +290,7 @@
 
 //Replies to a single recipient in a mail message
 -(void)replyToMailMessage:(MSOutlookMessage*)message
-               completion:(void (^)(int success, MSODataException *error))completion
+               completion:(void (^)(int success, NSError *error))completion
 {
 
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
@@ -424,6 +422,92 @@
     }];
 
 }
+
+//Accepts an event with comment - comment can be nil
+- (void)acceptCalendarEvent:(MSOutlookEvent *)event
+                withComment:(NSString*)comment
+                 completion:(void (^)(BOOL success, NSError *error))completion{
+    Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc]init];
+    
+    [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
+        MSOutlookUserFetcher *userFetcher = [client getMe];
+        MSOutlookEventFetcher *eventFetcher = [userFetcher getEventsById:event.Id];
+        MSOutlookEventOperations *operations = [eventFetcher operations];
+
+        NSURLSessionTask *task = [operations acceptWithComment:comment callback:^(int returnValue, MSODataException *error) {
+                BOOL success = (returnValue == 0);
+                completion(success, error);
+        }];
+        [task resume];
+    }];
+}
+
+//Declines an event with comment - comment can be nil
+- (void)declineCalendarEvent:(MSOutlookEvent *)event
+                 withComment:(NSString*)comment
+                  completion:(void (^)(BOOL success, NSError *error))completion{
+    Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc]init];
+    
+    [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
+        MSOutlookUserFetcher *userFetcher = [client getMe];
+        MSOutlookEventFetcher *eventFetcher = [userFetcher getEventsById:event.Id];
+        MSOutlookEventOperations *operations = [eventFetcher operations];
+        
+        NSURLSessionTask *task = [operations declineWithComment:comment callback:^(int returnValue, MSODataException *error) {
+            BOOL success = (returnValue == 0);
+            completion(success, error);
+        }];
+        [task resume];
+    }];
+}
+
+//Tentatively accepts an event with comment - comment can be nil
+- (void)tentativelyAccept:(MSOutlookEvent *)event
+              withComment:(NSString*)comment
+               completion:(void (^)(BOOL success, NSError *error))completion{
+    Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc]init];
+    
+    [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
+        MSOutlookUserFetcher *userFetcher = [client getMe];
+        MSOutlookEventFetcher *eventFetcher = [userFetcher getEventsById:event.Id];
+        MSOutlookEventOperations *operations = [eventFetcher operations];
+        
+        NSURLSessionTask *task = [operations tentativelyAcceptWithComment:comment callback:^(int returnValue, MSODataException *error) {
+            BOOL success = (returnValue == 0);
+            completion(success, error);
+        }];
+        [task resume];
+    }];
+}
+
+// Fetches calendar view in specified date range
+// For more information about calendar view, visit https://msdn.microsoft.com/office/office365/APi/calendar-rest-operations#GetCalendarView
+- (void)fetchCalendarViewFrom:(NSDate*) start
+                           To:(NSDate*) end
+                   completion:(void(^)(NSArray *events, NSError *error))completion
+{
+    Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc]init];
+    
+    [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
+        MSOutlookUserFetcher *userFetcher = [client getMe];
+  
+        MSOutlookEventCollectionFetcher *eventCollectionFetcher = [userFetcher getCalendarView];
+        [eventCollectionFetcher select:@"Subject"];
+
+        int numDaysToCheck = 10;
+        NSTimeInterval secondsBackToConsider = numDaysToCheck * 60 * 60 * 24;
+        
+        [eventCollectionFetcher addCustomParametersWithName:@"startDateTime" value:[NSDate dateWithTimeIntervalSinceNow:-secondsBackToConsider]];
+        [eventCollectionFetcher addCustomParametersWithName:@"endDateTime" value:[NSDate date]];
+        
+        NSURLSessionTask *task = [eventCollectionFetcher readWithCallback:^(NSArray<MSOutlookEvent> *events, MSODataException *exception) {
+            completion(events, exception);
+        }];
+        [task resume];
+    }];
+}
+
+
 
 #pragma mark - Contacts
 
