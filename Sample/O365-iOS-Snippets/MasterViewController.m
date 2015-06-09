@@ -677,7 +677,7 @@
                                            }
                                            else {
                                                NSMutableString *workingText = [[NSMutableString alloc] init];
-                                               [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>You have tentatively an event.</h3>"];
+                                               [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>You have tentatively accepted an event.</h3>"];
                                                [workingText appendFormat:@"<p>Event: %@<br></p>", event.Subject];
                                                [workingText appendFormat:@"</br><hr><p>For the code, see tentativelyAccept in Office365Snippets.m."];
                                                
