@@ -337,7 +337,25 @@
 
 }
 
+//Send a draft message
+-(void)sendDraftMessage:(NSString*)messageId
+             completion:(void (^)(MSOutlookMessage *draftMessage, NSError *error))completion{
 
+}
+
+//Add an attachment to a message
+-(void)addAttachment:(MSOutlookMessage *)message
+         contentType:(NSString*)contentType
+        contentBytes:(NSData*)contentBytes
+          completion:(void (^)(MSOutlookMessage *draftMessage, NSError *error))completion{
+    
+}
+
+//Send mail with an attachment
+- (void)sendMailMessage:(MSOutlookMessage *)message withAttachmentContentType:(NSString*)AttachmentContentType withAttachmentContentBytes:(NSData*)contentBytes
+             completion:(void (^)(BOOL, NSError *))completion{
+    
+}
 
 #pragma mark - Calendar
 
@@ -480,7 +498,7 @@
     }];
 }
 
-// Fetches calendar view in specified date range
+// Fetches first 10 calendar view event instances in specified date range
 // For more information about calendar view, visit https://msdn.microsoft.com/office/office365/APi/calendar-rest-operations#GetCalendarView
 - (void)fetchCalendarViewFrom:(NSDate*) start
                            To:(NSDate*) end
