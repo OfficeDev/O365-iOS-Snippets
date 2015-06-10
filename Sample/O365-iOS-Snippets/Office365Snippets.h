@@ -34,15 +34,15 @@
                completion:(void (^)(MSOutlookEvent *updatedEvent, NSError *error))completion;
 - (void)deleteCalendarEvent:(MSOutlookEvent *)event
                completion:(void (^)(BOOL success, NSError *error))completion;
-- (void)acceptCalendarEvent:(MSOutlookEvent *)event
-                withComment:(NSString*)comment
-                 completion:(void (^)(BOOL success, NSError *error))completion;
-- (void)declineCalendarEvent:(MSOutlookEvent *)event
-                 withComment:(NSString*)comment
-                  completion:(void (^)(BOOL success, NSError *error))completion;
-- (void)tentativelyAccept:(MSOutlookEvent *)event
-              withComment:(NSString*)comment
-               completion:(void (^)(BOOL success, NSError *error))completion;
+- (void)acceptCalendarMeetingEvent:(MSOutlookEvent *)event
+                       withComment:(NSString*)comment
+                        completion:(void (^)(BOOL success, NSError *error))completion;
+- (void)declineCalendarMeetingEvent:(MSOutlookEvent *)event
+                        withComment:(NSString*)comment
+                         completion:(void (^)(BOOL success, NSError *error))completion;
+- (void)tentativelyAcceptCalendarMeetingEvent:(MSOutlookEvent *)event
+                                  withComment:(NSString*)comment
+                                   completion:(void (^)(BOOL success, NSError *error))completion;
 - (void)fetchCalendarViewFrom:(NSDate*) start
                            To:(NSDate*) end
                    completion:(void(^)(NSArray *events, NSError *error))completion;

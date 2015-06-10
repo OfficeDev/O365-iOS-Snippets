@@ -442,28 +442,28 @@
 }
 
 //Accepts an event with comment - comment can be nil
-- (void)acceptCalendarEvent:(MSOutlookEvent *)event
-                withComment:(NSString*)comment
-                 completion:(void (^)(BOOL success, NSError *error))completion{
+- (void)acceptCalendarMeetingEvent:(MSOutlookEvent *)event
+                       withComment:(NSString*)comment
+                        completion:(void (^)(BOOL success, NSError *error))completion{
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc]init];
     
     [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
         MSOutlookUserFetcher *userFetcher = [client getMe];
         MSOutlookEventFetcher *eventFetcher = [userFetcher getEventsById:event.Id];
         MSOutlookEventOperations *operations = [eventFetcher operations];
-
+        
         NSURLSessionTask *task = [operations acceptWithComment:comment callback:^(int returnValue, MSODataException *error) {
-                BOOL success = (returnValue == 0);
-                completion(success, error);
+            BOOL success = (returnValue == 0);
+            completion(success, error);
         }];
         [task resume];
     }];
 }
 
 //Declines an event with comment - comment can be nil
-- (void)declineCalendarEvent:(MSOutlookEvent *)event
-                 withComment:(NSString*)comment
-                  completion:(void (^)(BOOL success, NSError *error))completion{
+- (void)declineCalendarMeetingEvent:(MSOutlookEvent *)event
+                        withComment:(NSString*)comment
+                         completion:(void (^)(BOOL success, NSError *error))completion{
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc]init];
     
     [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
@@ -480,9 +480,9 @@
 }
 
 //Tentatively accepts an event with comment - comment can be nil
-- (void)tentativelyAccept:(MSOutlookEvent *)event
-              withComment:(NSString*)comment
-               completion:(void (^)(BOOL success, NSError *error))completion{
+- (void)tentativelyAcceptCalendarMeetingEvent:(MSOutlookEvent *)event
+                                  withComment:(NSString*)comment
+                                   completion:(void (^)(BOOL success, NSError *error))completion{
     Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc]init];
     
     [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
@@ -498,7 +498,7 @@
     }];
 }
 
-// Fetches first 10 calendar view event instances in specified date range
+// Fetches the first 10 event instances in the specified date range
 // For more information about calendar view, visit https://msdn.microsoft.com/office/office365/APi/calendar-rest-operations#GetCalendarView
 - (void)fetchCalendarViewFrom:(NSDate*) start
                            To:(NSDate*) end

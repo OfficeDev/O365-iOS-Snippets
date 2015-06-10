@@ -95,9 +95,9 @@
     [calendarRows addObject:[SnippetInfo snippetInfoWithName:@"Update event" action:@selector(performUpdateCalendarEvent)]];
     [calendarRows addObject:[SnippetInfo snippetInfoWithName:@"Delete event" action:@selector(performDeleteCalendarEvent)]];
     // ADD
-    [calendarRows addObject:[SnippetInfo snippetInfoWithName:@"Accept event"                action:@selector(performAcceptCalendarEvent)]];
-    [calendarRows addObject:[SnippetInfo snippetInfoWithName:@"Decline event"               action:@selector(performDeclineCalendarEvent)]];
-    [calendarRows addObject:[SnippetInfo snippetInfoWithName:@"Tentatively accept event"    action:@selector(performTentativelyAcceptCalendarEvent)]];
+    [calendarRows addObject:[SnippetInfo snippetInfoWithName:@"Accept event"                action:@selector(performAcceptCalendarMeetingEvent)]];
+    [calendarRows addObject:[SnippetInfo snippetInfoWithName:@"Decline event"               action:@selector(performDeclineCalendarMeetingEvent)]];
+    [calendarRows addObject:[SnippetInfo snippetInfoWithName:@"Tentatively accept event"    action:@selector(performTentativelyAcceptCalendarMeetingEvent)]];
     [calendarRows addObject:[SnippetInfo snippetInfoWithName:@"Get calendar view"           action:@selector(performFetchCalendarViewEvent)]];
 
     NSMutableArray *contactRows = [[NSMutableArray alloc] init];
@@ -486,7 +486,7 @@
                                 }];
 }
 
-- (void) performAcceptCalendarEvent{
+- (void) performAcceptCalendarMeetingEvent{
     NSLog(@"Action: %@", NSStringFromSelector(_cmd));
 
     Office365Snippets *snippetLibrary = [[Office365Snippets alloc] init];
@@ -508,6 +508,7 @@
         else{
             MSOutlookEvent *event = nil;
             
+            // Meeting event refers to events in which the organizer is not the mail user.
             for(MSOutlookEvent *singleEvent in events){
                 if(!singleEvent.IsOrganizer){
                     event = singleEvent;
@@ -525,38 +526,38 @@
                 return;
             }
             else{
-                [snippetLibrary acceptCalendarEvent:event
-                                        withComment:@"Accept comment"
-                                         completion:^(BOOL success, NSError *error) {
-                                             NSString *resultText;
-                                             
-                                             NSLog(@"subject %@", event.Subject);
-                                             
-                                             if (!success) {
-                                                 resultText = [NSString stringWithFormat:@"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to update an event in your calendar. Please ensure your client ID and redirect URI have been set in the Authentication Manager, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
-                                             }
-                                             else {
-                                                 NSMutableString *workingText = [[NSMutableString alloc] init];
-                                                 [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>You have accepted an event.</h3>"];
-                                                 [workingText appendFormat:@"<p>Event: %@<br></p>", event.Subject];
-                                                 [workingText appendFormat:@"</br><hr><p>For the code, see acceptCalendarEvent in Office365Snippets.m."];
-                                                 
-                                                 resultText = workingText;
-                                             }
-                                             
-                                             [self updateUIWithResultString:resultText
-                                                                    success:success
-                                                             snippetService:@"Calendar"
-                                                                snippetName:@"Accept Event"];
-                                             
-                                         }];
+                [snippetLibrary acceptCalendarMeetingEvent:event
+                                               withComment:@"Accept comment"
+                                                completion:^(BOOL success, NSError *error) {
+                                                    NSString *resultText;
+                                                    
+                                                    NSLog(@"subject %@", event.Subject);
+                                                    
+                                                    if (!success) {
+                                                        resultText = [NSString stringWithFormat:@"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to update an event in your calendar. Please ensure your client ID and redirect URI have been set in the Authentication Manager, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
+                                                    }
+                                                    else {
+                                                        NSMutableString *workingText = [[NSMutableString alloc] init];
+                                                        [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>You have accepted an event.</h3>"];
+                                                        [workingText appendFormat:@"<p>Event: %@<br></p>", event.Subject];
+                                                        [workingText appendFormat:@"</br><hr><p>For the code, see acceptCalendarEvent in Office365Snippets.m."];
+                                                        
+                                                        resultText = workingText;
+                                                    }
+                                                    
+                                                    [self updateUIWithResultString:resultText
+                                                                           success:success
+                                                                    snippetService:@"Calendar"
+                                                                       snippetName:@"Accept Event"];
+                                                    
+                                                }];
                 
             }
         }
     }];
 }
 
-- (void) performDeclineCalendarEvent{
+- (void) performDeclineCalendarMeetingEvent{
     NSLog(@"Action: %@", NSStringFromSelector(_cmd));
     
     Office365Snippets *snippetLibrary = [[Office365Snippets alloc] init];
@@ -578,6 +579,7 @@
         else{
             MSOutlookEvent *event = nil;
             
+            // Meeting event refers to events in which the organizer is not the mail user.
             for(MSOutlookEvent *singleEvent in events){
                 if(!singleEvent.IsOrganizer){
                     event = singleEvent;
@@ -595,38 +597,38 @@
                 return;
             }
             else{
-                [snippetLibrary declineCalendarEvent:event
-                                         withComment:@"Decline comment"
-                                          completion:^(BOOL success, NSError *error) {
-                                             NSString *resultText;
-                                             
-                                             NSLog(@"subject %@", event.Subject);
-                                             
-                                             if (!success) {
-                                                 resultText = [NSString stringWithFormat:@"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to update an event in your calendar. Please ensure your client ID and redirect URI have been set in the Authentication Manager, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
-                                             }
-                                             else {
-                                                 NSMutableString *workingText = [[NSMutableString alloc] init];
-                                                 [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>You have successfully declined an event.</h3>"];
-                                                 [workingText appendFormat:@"<p>Event: %@<br></p>", event.Subject];
-                                                 [workingText appendFormat:@"</br><hr><p>For the code, see declineCalendarEvent in Office365Snippets.m."];
-                                                 
-                                                 resultText = workingText;
-                                             }
-                                             
-                                             [self updateUIWithResultString:resultText
-                                                                    success:success
-                                                             snippetService:@"Calendar"
-                                                                snippetName:@"Decline Event"];
-                                             
-                                         }];
+                [snippetLibrary declineCalendarMeetingEvent:event
+                                                withComment:@"Decline comment"
+                                                 completion:^(BOOL success, NSError *error) {
+                                                     NSString *resultText;
+                                                     
+                                                     NSLog(@"subject %@", event.Subject);
+                                                     
+                                                     if (!success) {
+                                                         resultText = [NSString stringWithFormat:@"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to update an event in your calendar. Please ensure your client ID and redirect URI have been set in the Authentication Manager, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
+                                                     }
+                                                     else {
+                                                         NSMutableString *workingText = [[NSMutableString alloc] init];
+                                                         [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>You have successfully declined an event.</h3>"];
+                                                         [workingText appendFormat:@"<p>Event: %@<br></p>", event.Subject];
+                                                         [workingText appendFormat:@"</br><hr><p>For the code, see declineCalendarEvent in Office365Snippets.m."];
+                                                         
+                                                         resultText = workingText;
+                                                     }
+                                                     
+                                                     [self updateUIWithResultString:resultText
+                                                                            success:success
+                                                                     snippetService:@"Calendar"
+                                                                        snippetName:@"Decline Event"];
+                                                     
+                                                 }];
                 
             }
         }
     }];
 }
 
-- (void) performTentativelyAcceptCalendarEvent{
+- (void) performTentativelyAcceptCalendarMeetingEvent{
     NSLog(@"Action: %@", NSStringFromSelector(_cmd));
     
     Office365Snippets *snippetLibrary = [[Office365Snippets alloc] init];
@@ -648,6 +650,7 @@
         else{
             MSOutlookEvent *event = nil;
             
+            // Meeting event refers to events in which the organizer is not the mail user.
             for(MSOutlookEvent *singleEvent in events){
                 if(!singleEvent.IsOrganizer){
                     event = singleEvent;
@@ -665,31 +668,31 @@
                 return;
             }
             else{
-                [snippetLibrary tentativelyAccept:event
-                                      withComment:@"Decline comment"
-                                       completion:^(BOOL success, NSError *error) {
-                                           NSString *resultText;
-                                           
-                                           NSLog(@"subject %@", event.Subject);
-                                           
-                                           if (!success) {
-                                               resultText = [NSString stringWithFormat:@"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to update an event in your calendar. Please ensure your client ID and redirect URI have been set in the Authentication Manager, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
-                                           }
-                                           else {
-                                               NSMutableString *workingText = [[NSMutableString alloc] init];
-                                               [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>You have tentatively accepted an event.</h3>"];
-                                               [workingText appendFormat:@"<p>Event: %@<br></p>", event.Subject];
-                                               [workingText appendFormat:@"</br><hr><p>For the code, see tentativelyAccept in Office365Snippets.m."];
-                                               
-                                               resultText = workingText;
-                                           }
-                                           
-                                           [self updateUIWithResultString:resultText
-                                                                  success:success
-                                                           snippetService:@"Calendar"
-                                                              snippetName:@"Tentatively Accept Event"];
-                                           
-                                       }];
+                [snippetLibrary tentativelyAcceptCalendarMeetingEvent:event
+                                                          withComment:@"Decline comment"
+                                                           completion:^(BOOL success, NSError *error) {
+                                                               NSString *resultText;
+                                                               
+                                                               NSLog(@"subject %@", event.Subject);
+                                                               
+                                                               if (!success) {
+                                                                   resultText = [NSString stringWithFormat:@"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p><hr></br>We were unable to update an event in your calendar. Please ensure your client ID and redirect URI have been set in the Authentication Manager, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the read me.", [error localizedDescription]];
+                                                               }
+                                                               else {
+                                                                   NSMutableString *workingText = [[NSMutableString alloc] init];
+                                                                   [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>You have tentatively accepted an event.</h3>"];
+                                                                   [workingText appendFormat:@"<p>Event: %@<br></p>", event.Subject];
+                                                                   [workingText appendFormat:@"</br><hr><p>For the code, see tentativelyAccept in Office365Snippets.m."];
+                                                                   
+                                                                   resultText = workingText;
+                                                               }
+                                                               
+                                                               [self updateUIWithResultString:resultText
+                                                                                      success:success
+                                                                               snippetService:@"Calendar"
+                                                                                  snippetName:@"Tentatively Accept Event"];
+                                                               
+                                                           }];
                 
             }
         }
