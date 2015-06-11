@@ -1114,7 +1114,7 @@
 
 }
 
-// Move a message to the DeletedItems folder.
+// Copy a message to the DeletedItems folder.
 - (void)performCopyMessage
 {
     NSLog(@"Action: %@", NSStringFromSelector(_cmd));
