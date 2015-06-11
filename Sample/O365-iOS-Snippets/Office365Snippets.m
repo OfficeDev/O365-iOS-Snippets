@@ -339,6 +339,168 @@
 
 }
 
+/**
+ *  Copy a mail message to the deleted items folder.
+ *  https://msdn.microsoft.com/en-us/office/office365/api/mail-rest-operations#MoveorcopymessagesCopyamessageREST
+ *
+ *  @param itemId     Identifier of the message that will be copied
+ *  @param completion
+ */
+-(void)copyMessage:(NSString*)messageId
+        completion:(void (^)(BOOL success, MSODataException *error))completion
+{
+    // Create an item.
+    Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
+    
+    // Get the MSOutlookClient and get the item to copy.
+    [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
+        MSOutlookUserFetcher *userFetcher = [client getMe];
+        MSOutlookMessageCollectionFetcher *messageCollectionFetcher = [userFetcher getMessages];
+        MSOutlookMessageFetcher *messageFetcher = [messageCollectionFetcher getById:messageId];
+        
+        // Copy the item to the destination folder. This results in a call to the service.
+        NSURLSessionTask *task = [[messageFetcher operations] copyWithDestinationId:@"DeletedItems" callback:^(MSOutlookMessage *msg, MSODataException *error) {
+            
+            // You now have the copied MSOutlookMessage named msg.
+            
+            if (completion)
+            {
+                if (error)
+                    completion(NO, error);
+                else
+                    completion(YES, error);
+            }
+
+        }];
+        
+        [task resume];
+    }];
+}
+
+/**
+ *  Move a mail message to the deleted items folder.
+ *  https://msdn.microsoft.com/en-us/office/office365/api/mail-rest-operations#MoveorcopymessagesCopyamessageREST
+ *
+ *  @param itemId     Identifier of the message that will be moved
+ *  @param completion
+ */
+-(void)moveMessage:(NSString*)messageId
+        completion:(void (^)(BOOL success, MSODataException *error))completion
+{
+    // Create an item.
+    Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
+    
+    // Get the MSOutlookClient and get the item to move.
+    [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
+        MSOutlookUserFetcher *userFetcher = [client getMe];
+        MSOutlookMessageCollectionFetcher *messageCollectionFetcher = [userFetcher getMessages];
+        MSOutlookMessageFetcher *messageFetcher = [messageCollectionFetcher getById:messageId];
+        
+        // Copy the item to the destination folder. This results in a call to the service.
+        NSURLSessionTask *task = [[messageFetcher operations] moveWithDestinationId:@"DeletedItems" callback:^(MSOutlookMessage *msg, MSODataException *error) {
+            
+            // You now have the moved MSOutlookMessage named msg with updated odata.etag, Id, ChangeKey, and ParentFolderId.
+            // The old item identifier is no longer valid.
+            
+            if (completion)
+            {
+                if (error)
+                    completion(NO, error);
+                else
+                    completion(YES, error);
+            }
+            
+        }];
+        
+        [task resume];
+    }];
+}
+
+/**
+ *  Fetch up to the first 10 unread messages in your inbox that have been marked as important.
+ *  https://msdn.microsoft.com/en-us/office/office365/api/mail-rest-operations#MoveorcopymessagesCopyamessageREST
+ *
+ *  @param completion
+ */
+- (void)fetchUnreadImportantMessages:(void (^)(NSArray *messages, NSError *error))completion
+{
+    Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
+    
+    // Get the MSOutlookClient. This object contains access tokens and methods to call the service.
+    [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
+        
+        MSOutlookUserFetcher *userFetcher = [client getMe];
+        MSOutlookMessageCollectionFetcher *messageCollectionFetcher = [userFetcher getMessages];
+        
+        // Identify which properties to return. Only request properties that you will use.
+        // The identifier is always returned.
+        // https://msdn.microsoft.com/office/office365/APi/complex-types-for-mail-contacts-calendar#RESTAPIResourcesMessage
+        [messageCollectionFetcher select:@"Subject,Importance,IsRead,Sender,DateTimeReceived"];
+        
+        // Search for items that are both unread and marked as important. The library will URL encode this for you.
+        // https://msdn.microsoft.com/office/office365/APi/complex-types-for-mail-contacts-calendar#UseODataqueryparameters
+        //[messageCollectionFetcher addCustomParametersWithName:@"filter" value:@"IsRead eq true AND Importance eq 'High'"];
+        [messageCollectionFetcher filter:@"IsRead eq true AND Importance eq 'High'"];
+        
+        NSURLSessionTask *task = [messageCollectionFetcher readWithCallback:^(NSArray *messages, MSODataException *error) {
+            
+            // You now have an NSArray of MSOutlookMessage objects.
+            
+            if (completion)
+            {
+                if (error)
+                    completion(nil, error);
+                else
+                    completion(messages, error);
+            }
+            
+        }];
+        
+        [task resume];
+    }];
+}
+
+/**
+ *  Get the weblink to the first item in your inbox. This example assumes you have at least one item in your inbox.
+ *  https://msdn.microsoft.com/office/office365/APi/complex-types-for-mail-contacts-calendar#RESTAPIResourcesMessage
+ *
+ *  @param completion
+ */
+- (void)fetchMessageWebLink:(void (^)(NSString *webLink, NSError *error))completion
+{
+    Office365ClientFetcher *clientFetcher = [[Office365ClientFetcher alloc] init];
+    
+    // Get the MSOutlookClient. This object contains access tokens and methods to call the service.
+    [clientFetcher fetchOutlookClient:^(MSOutlookClient *client) {
+        
+        MSOutlookUserFetcher *userFetcher = [client getMe];
+        MSOutlookMessageCollectionFetcher *messageCollectionFetcher = [userFetcher getMessages];
+        
+        // Identify which properties to return. Only request properties that you will use.
+        // The identifier is always returned.
+        // https://msdn.microsoft.com/office/office365/APi/complex-types-for-mail-contacts-calendar#RESTAPIResourcesMessage
+        [messageCollectionFetcher select:@"Subject,WebLink"];
+        
+        // Identify how many items to return in the page.
+        [messageCollectionFetcher top:1];
+        
+        NSURLSessionTask *task = [messageCollectionFetcher readWithCallback:^(NSArray *messages, MSODataException *error) {
+            
+            // You now have an NSArray of MSOutlookMessage objects. Let's get the first and only object.
+            MSOutlookMessage *message = (MSOutlookMessage*)[messages firstObject];
+            
+            if (completion)
+            {
+                if (error)
+                    completion(nil, error);
+                else
+                    completion(message.WebLink, error);
+            }
+        }];
+        
+        [task resume];
+    }];
+}
 
 
 #pragma mark - Calendar

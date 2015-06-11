@@ -26,6 +26,15 @@
 - (void)createDraftReplyMessage:(MSOutlookMessage*)message
                     completion:(void (^)(MSOutlookMessage *replyMessage, NSError *error))completion;
 
+- (void)copyMessage:(NSString*)messageId
+         completion:(void (^)(BOOL success, MSODataException *error))completion;
+- (void)moveMessage:(NSString*)messageId
+         completion:(void (^)(BOOL success, MSODataException *error))completion;
+- (void)fetchUnreadImportantMessages:(void(^)(NSArray *messages, NSError *error))completion;
+- (void)fetchMessageWebLink:(void(^)(NSString *webLink, NSError *error))completion;
+
+
+
 // Calendar
 - (void)fetchCalendarEvents:(void(^)(NSArray *events, NSError *error))completion;
 - (void)createCalendarEvent:(MSOutlookEvent *)event
