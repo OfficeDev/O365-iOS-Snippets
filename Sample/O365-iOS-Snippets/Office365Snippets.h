@@ -22,7 +22,7 @@
 - (void)deleteMailMessage:(MSOutlookMessage *)message
                completion:(void (^)(BOOL success, NSError *error))completion;
 - (void)replyToMailMessage:(MSOutlookMessage*)message
-                completion:(void (^)(int success, MSODataException *error))completion;
+                completion:(void (^)(int success, NSError *error))completion;
 - (void)createDraftReplyMessage:(MSOutlookMessage*)message
                     completion:(void (^)(MSOutlookMessage *replyMessage, NSError *error))completion;
 
@@ -43,6 +43,18 @@
                completion:(void (^)(MSOutlookEvent *updatedEvent, NSError *error))completion;
 - (void)deleteCalendarEvent:(MSOutlookEvent *)event
                completion:(void (^)(BOOL success, NSError *error))completion;
+- (void)acceptCalendarMeetingEvent:(MSOutlookEvent *)event
+                       withComment:(NSString*)comment
+                        completion:(void (^)(BOOL success, NSError *error))completion;
+- (void)declineCalendarMeetingEvent:(MSOutlookEvent *)event
+                        withComment:(NSString*)comment
+                         completion:(void (^)(BOOL success, NSError *error))completion;
+- (void)tentativelyAcceptCalendarMeetingEvent:(MSOutlookEvent *)event
+                                  withComment:(NSString*)comment
+                                   completion:(void (^)(BOOL success, NSError *error))completion;
+- (void)fetchCalendarViewFrom:(NSDate*) start
+                           To:(NSDate*) end
+                   completion:(void(^)(NSArray *events, NSError *error))completion;
 
 // Contacts
 - (void)fetchContacts:(void(^)(NSArray *contacts, NSError *error))completion;
