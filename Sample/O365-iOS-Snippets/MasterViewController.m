@@ -114,6 +114,13 @@
     [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Delete message" action:@selector(performDeleteMailMessage)]];
     [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Reply to message" action:@selector(performReplyToMailMessage)]];
     [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Create draft reply" action:@selector(createDraftReplyMailMessage)]];
+    [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Copy a mail message" action:@selector(performCopyMessage)]];
+    [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Move a mail message" action:@selector(performMoveMessage)]];
+    [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Get unread important messages" action:@selector(performFetchUnreadImportantMessages)]];
+    [mailRows addObject:[SnippetInfo snippetInfoWithName:@"Get a message weblink" action:@selector(performFetchMessageWebLink)]];
+    
+    
+    
 
     NSMutableArray *filesRows = [[NSMutableArray alloc] init];
     [filesRows addObject:[SnippetInfo snippetInfoWithName:@"Get files" action:@selector(performFetchFiles)]];
@@ -1369,6 +1376,178 @@
     }];
 
 }
+
+// Copy a message to the DeletedItems folder.
+- (void)performCopyMessage
+{
+    NSLog(@"Action: %@", NSStringFromSelector(_cmd));
+    
+    Office365Snippets *snippetLibrary = [[Office365Snippets alloc] init];
+    
+    [self.spinner startAnimating];
+    
+    // Add the logged in user as recipient. This will be used to address an email to yourself.
+    NSArray *recipients = [[NSArray alloc]initWithObjects:[[NSUserDefaults standardUserDefaults] objectForKey:@"LogInUser"], nil];
+    
+    // Prepare a message to copy. This message is on the client.
+    MSOutlookMessage *message = [snippetLibrary outlookMessageWithProperties:recipients subject:@"Copy message" body:@"This message will be copied."];
+    
+    // Create the message as a draft in the service.
+    [snippetLibrary createDraftMailMessage:message completion:^(MSOutlookMessage *addedMessage, NSError *error) {
+        
+        // Now that we have a draft mail saved and an message identifier, we can copy it.
+        [snippetLibrary copyMessage:addedMessage.Id completion:^(BOOL success, MSODataException *error) {
+            
+            NSString *resultText;
+            
+            if (success) {
+                NSMutableString *workingText = [[NSMutableString alloc] init];
+                [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>We created a draft mail message and copied it to your Deleted Items folder.</h3>"];
+                [workingText appendFormat:@"</br><hr><p>For the code, see copyMessage in Office365Snippets.m."];
+                
+                resultText = workingText;
+
+            }
+            else {
+
+                resultText = [NSString stringWithFormat:@"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p>", [error localizedDescription]];
+                
+            }
+            
+            [self updateUIWithResultString:resultText
+                                   success:success
+                            snippetService:@"Mail"
+                               snippetName:@"Copy a mail message"];
+            
+        }];
+        
+    }];
+}
+
+// Move a message to the DeletedItems folder.
+- (void)performMoveMessage
+{
+    NSLog(@"Action: %@", NSStringFromSelector(_cmd));
+    
+    Office365Snippets *snippetLibrary = [[Office365Snippets alloc] init];
+    
+    [self.spinner startAnimating];
+    
+    // Add the logged in user as recipient. This will be used to address an email to yourself.
+    NSArray *recipients = [[NSArray alloc]initWithObjects:[[NSUserDefaults standardUserDefaults] objectForKey:@"LogInUser"], nil];
+    
+    // Prepare a message to move. This message is on the client.
+    MSOutlookMessage *message = [snippetLibrary outlookMessageWithProperties:recipients subject:@"Move message" body:@"This message will be moved."];
+    
+    // Create the message as a draft in the service.
+    [snippetLibrary createDraftMailMessage:message completion:^(MSOutlookMessage *addedMessage, NSError *error) {
+        
+        // Now that we have a draft mail saved and an message identifier, we can move it.
+        [snippetLibrary moveMessage:addedMessage.Id completion:^(BOOL success, MSODataException *error) {
+            
+            NSString *resultText;
+            
+            if (success) {
+                NSMutableString *workingText = [[NSMutableString alloc] init];
+                [workingText appendFormat:@"<h2><font color=green>SUCCESS!</h2></font><h3>We created a draft mail message and moved it to your Deleted Items folder.</h3>"];
+                [workingText appendFormat:@"</br><hr><p>For the code, see moveMessage in Office365Snippets.m."];
+                
+                resultText = workingText;
+                
+            }
+            else {
+                
+                resultText = [NSString stringWithFormat:@"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Exception: %@</p>", [error localizedDescription]];
+                
+            }
+            
+            [self updateUIWithResultString:resultText
+                                   success:success
+                            snippetService:@"Mail"
+                               snippetName:@"Move a mail message"];
+            
+        }];
+        
+    }];
+}
+// Fetch up to the first 10 unread messages in your inbox that have been marked as important
+// and provide the results to the UI.
+- (void)performFetchUnreadImportantMessages
+{
+    NSLog(@"Action: %@", NSStringFromSelector(_cmd));
+    
+    Office365Snippets *snippetLibrary = [[Office365Snippets alloc] init];
+    
+    [self.spinner startAnimating];
+    
+    // Call the fetchUnreadImportantMessages snippet.
+    [snippetLibrary fetchUnreadImportantMessages:^(NSArray *messages, NSError *error) {
+        NSString *resultText;
+        BOOL success = (error) ? NO : YES;
+        
+        if (success) {
+            NSMutableString *workingText = [[NSMutableString alloc] init];
+            
+            if (messages.count > 0)
+                [workingText appendFormat:@"<h2><font color=#6AFB92>SUCCESS!</h2></font><h3>We retrieved the following unread important items from your inbox:</h3>"];
+            else
+                [workingText appendFormat:@"<h2><font color=#6AFB92>SUCCESS!</h2></font><h3>We didn't find any emails but the call succeeded.</h3>"];
+            
+            for(MSOutlookMessage *message in messages) {
+                [workingText appendFormat:@"<p>%@<br></p>", message.Subject];
+            }
+            
+            [workingText appendFormat:@"</br><hr><p>For the code, see fetchUnreadImportantMailMessages in Office365Snippets.m."];
+            
+            resultText = [workingText copy];
+        }
+        else {
+
+            resultText = [NSString stringWithFormat:@"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Error: %@</p><hr></br>We were unable to read the messages in your Office 365 inbox. Please ensure your client ID and redirect URI have been set in AuthenticationManager.m, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the readme.", [error localizedDescription]];
+        }
+        
+        [self updateUIWithResultString:resultText
+                               success:success
+                        snippetService:@"Mail"
+                           snippetName:@"Get unread important messages"];
+    }];
+}
+
+// Fetch the weblink to the first message in the inbox and provide the results to the UI.
+- (void)performFetchMessageWebLink
+{
+    NSLog(@"Action: %@", NSStringFromSelector(_cmd));
+    
+    Office365Snippets *snippetLibrary = [[Office365Snippets alloc] init];
+    
+    [self.spinner startAnimating];
+    
+    // Call the fetchMessageWebLink snippet.
+    [snippetLibrary fetchMessageWebLink:^(NSString *webLink, NSError *error) {
+        NSString *resultText;
+        BOOL success = (error) ? NO : YES;
+        
+        if (success) {
+            NSMutableString *workingText = [[NSMutableString alloc] init];
+            [workingText appendFormat:@"<h2><font color=#6AFB92>SUCCESS!</h2></font><h3>We retrieved the following WebLink: %@</h3>", webLink];
+    
+            
+            [workingText appendFormat:@"</br><hr><p>For the code, see fetchMessageWebLink in Office365Snippets.m."];
+            
+            resultText = [workingText copy];
+        }
+        else {
+            
+            resultText = [NSString stringWithFormat:@"<h2><font color=#DC381F>FAIL: </font></h2><p>Oops! The following exception was raised.</p><p>Error: %@</p><hr></br>We were unable to read the messages in your Office 365 inbox. Please ensure your client ID and redirect URI have been set in AuthenticationManager.m, and all of the service permissions have been correctly configured in your Azure app registration. Both of these procedures are covered in depth in the readme.", [error localizedDescription]];
+        }
+        
+        [self updateUIWithResultString:resultText
+                               success:success
+                        snippetService:@"Mail"
+                           snippetName:@"Get message weblink"];
+    }];
+}
+
 
 
 - (void)performFetchFiles
