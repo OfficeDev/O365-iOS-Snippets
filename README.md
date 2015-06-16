@@ -78,7 +78,7 @@ You'll simply need to navigate to the project directory in the **Terminal** (roo
 
     pod install
 
-Note: You should receive confirmation that these dependencies have been added to the project and that you must open the workspace instead of the project from now on in Xcode (**O365-iOS-Snippets.xcworkspace**).  If there is a syntax error in the Podfile, you will encounter an error when you run the install command.
+Note: You should receive confirmation that these dependencies have been added to the project.  If there is a syntax error in the Podfile, you will encounter an error when you run the install command.
 
 ## Register your app with Microsoft Azure
 1.	Sign in to the [Azure Management Portal](https://manage.windowsazure.com), using your Azure AD credentials.
