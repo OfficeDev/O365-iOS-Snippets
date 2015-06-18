@@ -155,7 +155,11 @@ We'd love to get your feedback on this Office 365 iOS project . You can send you
 
 ## Additional resources
 
+* [Office 365 Connect app for iOS](https://github.com/OfficeDev/O365-iOS-Connect)
+* [Office 365 Profile Sample for iOS](https://github.com/OfficeDev/O365-iOS-Profile)
+* [Email Peek - An iOS app built using Office 365](https://github.com/OfficeDev/O365-iOS-EmailPeek)
 * [Office 365 APIs documentation](http://msdn.microsoft.com/office/office365/howto/platform-development-overview)
+* [Office 365 API code samples and videos](https://msdn.microsoft.com/office/office365/howto/starter-projects-and-code-samples)
 * [File REST operations reference](http://msdn.microsoft.com/office/office365/api/files-rest-operations)
 * [Calendar REST operations reference](http://msdn.microsoft.com/office/office365/api/calendar-rest-operations)
 * [Mail REST operations reference](https://msdn.microsoft.com/office/office365/api/mail-rest-operations)
@@ -164,4 +168,5 @@ We'd love to get your feedback on this Office 365 iOS project . You can send you
 * [Microsoft Azure Active Directory Authentication Library (ADAL) for iOS and OSX](https://github.com/AzureAD/azure-activedirectory-library-for-objc)
 * [Office 365 SDK for iOS](https://github.com/OfficeDev/Office-365-SDK-for-iOS)
 * [UI Library for Microsoft RMS SDK v4.1 for iOS](https://github.com/AzureAD/rms-sdk-ui-for-ios)
+
 
