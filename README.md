@@ -1,4 +1,5 @@
 # Office 365 code snippets for iOS
+[![Build Status](https://travis-ci.org/OfficeDev/O365-iOS-Snippets.svg?branch=master)](https://travis-ci.org/OfficeDev/O365-iOS-Snippets)
 
 **Table of contents**
 
@@ -168,5 +169,3 @@ Questions about Office 365 development in general should be posted to [Stack Ove
 * [Microsoft Azure Active Directory Authentication Library (ADAL) for iOS and OSX](https://github.com/AzureAD/azure-activedirectory-library-for-objc)
 * [Office 365 SDK for iOS](https://github.com/OfficeDev/Office-365-SDK-for-iOS)
 * [UI Library for Microsoft RMS SDK v4.1 for iOS](https://github.com/AzureAD/rms-sdk-ui-for-ios)
-
-
