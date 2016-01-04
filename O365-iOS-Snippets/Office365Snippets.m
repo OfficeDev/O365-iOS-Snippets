@@ -10,8 +10,7 @@
 #import <office365_odata_base/office365_odata_base.h>
 #import <office365_exchange_sdk/office365_exchange_sdk.h>
 #import <office365_files_sdk/office365_files_sdk.h>
-#import "MSOutlookMessageCollectionFetcher.h"
-#import "MSDiscoveryServiceInfoCollectionFetcher.h"
+#import <office365_odata_base/office365_odata_core.h>
 
 @interface Office365Snippets ()
 @property (strong, nonatomic) Office365ClientFetcher *o365ClientFetcher;
