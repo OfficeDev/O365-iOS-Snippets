@@ -9,6 +9,7 @@
 * [Get the Client ID and Redirect Uri into the project](#Get-the-Client-ID-and-Redirect-Uri-into-the-project)
 * [Code of Interest](#code-of-interest)
 * [Questions and comments](#questions-and-comments)
+* [Troubleshooting](#troubleshooting)
 * [Additional resources](#additional-resources)
 
 
@@ -150,13 +151,25 @@ We'd love to get your feedback on this Office 365 iOS project . You can send you
 * In the [Issues](https://github.com/OfficeDev/O365-iOS-Snippets/issues) section of this repository.
 * On [Stack Overflow](http://stackoverflow.com/questions/tagged/Office365+API). Make sure that your questions or comments are tagged with [Office365] and [API].
 
+<a name="troubleshooting"></a>
+## Troubleshooting
+
+With the Xcode 7.0 update, App Transport Security is enabled for simulators and devices running iOS 9. See [App Transport Security Technote](https://developer.apple.com/library/prerelease/ios/technotes/App-Transport-Security-Technote/).
+
+For this sample we have created a temporary exception for the following domain in the plist:
+
+- outlook.office365.com
+
+If this exception is not included, all calls into the Office 365 API will fail in this app when deployed to an iOS 9 simulator in Xcode.
+
+
 ## Additional resources
 
 * [Office 365 APIs documentation](http://msdn.microsoft.com/office/office365/howto/platform-development-overview)
-* [File REST operations reference](http://msdn.microsoft.com/en-us/office/office365/api/files-rest-operations)
-* [Calendar REST operations reference](http://msdn.microsoft.com/en-us/office/office365/api/calendar-rest-operations)
-* [Mail REST operations reference](https://msdn.microsoft.com/en-us/office/office365/api/mail-rest-operations)
-* [Contacts REST operations reference](https://msdn.microsoft.com/en-us/office/office365/api/contacts-rest-operations)
+* [File REST operations reference](http://msdn.microsoft.com/office/office365/api/files-rest-operations)
+* [Calendar REST operations reference](http://msdn.microsoft.com/office/office365/api/calendar-rest-operations)
+* [Mail REST operations reference](https://msdn.microsoft.com/office/office365/api/mail-rest-operations)
+* [Contacts REST operations reference](https://msdn.microsoft.com/office/office365/api/contacts-rest-operations)
 * [Office Dev Center](http://dev.office.com/)
 * [Microsoft Azure Active Directory Authentication Library (ADAL) for iOS and OSX](https://github.com/AzureAD/azure-activedirectory-library-for-objc)
 * [Office 365 SDK for iOS](https://github.com/OfficeDev/Office-365-SDK-for-iOS)

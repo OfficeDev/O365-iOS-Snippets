@@ -1,9 +1,14 @@
 language: objective-c
-
-before_install:
-  - gem install cocoapods
-  - brew update
-  - if brew outdated | grep -qx xctool; then brew upgrade xctool; fi
-
+osx_image: xcode7
+xcode_workspace: O365-iOS-Snippets.xcworkspace
+xcode_scheme: O365-iOS-Snippets
 script:
-  - xctool -workspace O365-iOS-Snippets.xcworkspace -scheme O365-iOS-Snippets -sdk iphonesimulator
+- xctool -workspace O365-iOS-Snippets.xcworkspace -scheme O365-iOS-Snippets -sdk iphonesimulator
+notifications:
+  slack:
+    secure: KBuWOQn9y+jrmqffglthB0T86aGm3KcTKYaImlgafpy1K+sEtdukViNAqRN7d2z8VD0Zru0CVs7i3esS263w2+t2N/1yjvm6GdvKZCJ4Szh2GvJi/HEbpgBntjiPMY/MK41icImf+soBWtyS0hJiSQrDroRvyUZgCQdhWhaKxpI=
+  email:
+    recipients:
+    - jak@microsoft.com
+    on_success: never
+    on_failure: always
