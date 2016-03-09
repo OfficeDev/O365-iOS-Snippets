@@ -9,7 +9,6 @@
 * [Register your app with Microsoft Azure](#register-your-app-with-microsoft-azure)
 * [Get the Client ID and Redirect Uri into the project](#get-the-client-id-and-redirect-uri-into-the-project)
 * [Code of Interest](#code-of-interest)
-* [Questions and comments](#questions-and-comments)
 * [Additional resources](#additional-resources)
 
 
@@ -146,12 +145,6 @@ The Office 365 Discovery service code to retrieve the Exchange and SharePoint se
 *Office365Snippets.m (fetchDiscoveryServiceEndpoints method)*
 
 This sample begins the authentication process automatically when it starts. The ViewDidLoad method in MasterViewController.m calls the method **fetchDiscoveryServiceEndpoints** method. The **fetchDiscoveryServiceEndpoint** method creates a Discovery client which authenticates the user.
-
-## Questions and comments
-
-We'd love to get your feedback on the Office 365 iOS Snippets project. You can send your questions and suggestions to us in the [Issues](https://github.com/OfficeDev/O365-iOS-Snippets/issues) section of this repository.
-
-Questions about Office 365 development in general should be posted to [Stack Overflow](http://stackoverflow.com/questions/tagged/Office365+API). Make sure that your questions or comments are tagged with [Office365] and [API].
 
 
 ## Additional resources
